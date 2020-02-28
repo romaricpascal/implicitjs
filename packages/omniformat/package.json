@@ -1,6 +1,6 @@
 {
   "name": "omniformat",
-  "version": "0.1.0-0",
+  "version": "1.0.0-0",
   "description": "Formats strings from any kind of objects",
   "main": "src/index.js",
   "engines": {
