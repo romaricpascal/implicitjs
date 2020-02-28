@@ -89,3 +89,25 @@ test('it returns a promise if any of the iterator element is an async function',
       t.is('{"a":1}value25', v)
     )
   ]));
+
+test('it can be extended', t => {
+  function formatWithUppercasedStrings(expression, options) {
+    if (typeof expression === 'string') {
+      return expression.toUpperCase();
+    }
+    return format(expression, {
+      formatResults: formatWithUppercasedStrings,
+      ...options
+    });
+  }
+
+  t.is('YUPPI', formatWithUppercasedStrings('yuppi'));
+  t.is(
+    'YUPPI',
+    formatWithUppercasedStrings(() => 'yuppi')
+  );
+  t.is('YUPPI', formatWithUppercasedStrings(['yuppi']));
+  return formatWithUppercasedStrings(Promise.resolve('yuppi')).then(v =>
+    t.is('YUPPI', v)
+  );
+});

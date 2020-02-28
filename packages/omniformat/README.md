@@ -1,4 +1,4 @@
-omniformat
+Omniformat
 ===
 
 Formats any value into a String, invoking functions, handling promises results, and mapping iterators' (`Array`, `Map`, `Set`...) values, then joining them. Recursively formats the returned values from functions, promises and iterators.
@@ -52,3 +52,23 @@ These are just passed to the function itself.
 `Array`s and objects with an iterator (`Sets`,`Maps` and any objects with a `[Symbol.iterator]`, except Strings) will have each of their item formatted, the possible resulting promises awaited, and the results then joined with an empty string.
 
 The string used for joining can be configured with the `iteratorJoinString`.
+
+Extending the function
+---
+
+You can implement extra formatting, process the formatted values or override the formatting for specific kinds of expressions by wrapping the `format` function in your own. Don't forget to pass your function as the `formatResults` option so that results of functions, promises and iterators are formatted by your function and not the original implementation.
+
+For example:
+
+```js
+// Let's create our own formatter that uppercases strings
+function formatWithUppercasedStrings(expression) {
+  if (typeof expression === 'string') {
+    return expression.toUpperCase();
+  }
+  // IMPORTANT: Pass the function as the `format` option
+  // without it, formating of results will use the original
+  // implementation
+  return format(expression, {format: formatWithUppercasedStrings});
+}
+```
