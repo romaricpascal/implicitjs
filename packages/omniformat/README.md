@@ -1,7 +1,28 @@
 omniformat
 ===
 
-Formats any value into a String, invoking functions, awaiting promises and mapping iterators' values, then joining them. Recursively formats the returned values from functions, promises and iterators.
+Formats any value into a String, invoking functions, handling promises results, and mapping iterators' (`Array`, `Map`, `Set`...) values, then joining them. Recursively formats the returned values from functions, promises and iterators.
+
+Installation and usage
+---
+
+Install the library via your favourite package manager:
+
+```shell
+npm install omniformat
+```
+
+Then import or require it in your project and profit
+
+```js
+const format = require('omniformat');
+
+format('Look, a plane!') // Strings are passed as is 'Look, a plane!'
+format({content: 'Look, a plane!'}) // Objects are JSON.stringified '{"content": "Look, a plane!"}
+format(() => 'Look, a plane!') // Functions are evaluated `'Look, a plane!'`
+format(Promise.resolve(() => 'Look, a plane!')) // Returns a Promise for 'Look, a plane!'
+format(['Look,',() => 'a','plane'], {iteratorJoinString: ' '}) // Iterators elements are each formated and their value `String.prototype.join`ed
+```
 
 Formatting description
 ---

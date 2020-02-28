@@ -52,3 +52,40 @@ test('it processes the output of the function', t => {
     })
   );
 });
+
+// Promises
+test('it returns a promise that provides the formated value', t => {
+  return format(Promise.resolve({ a: 1 })).then(v => t.is('{"a":1}', v));
+});
+
+test('it retruns a promise if the function returns a promise', t => {
+  return format(() => Promise.resolve({ a: 1 })).then(v => t.is('{"a":1}', v));
+});
+
+test('it runs the function if the promise returns a function', t => {
+  return format(Promise.resolve(() => ({ a: 1 }))).then(v =>
+    t.is('{"a":1}', v)
+  );
+});
+
+// Iterators
+test('it formats each of the synchronous items of the iterator', t =>
+  t.is('{"a":1}value25', format([{ a: 1 }, 'value', 2, () => 5])));
+test('it allows configuration of the joining String', t =>
+  t.is(
+    '{"a":1},value,2,5',
+    format([{ a: 1 }, 'value', 2, () => 5], { iteratorJoinString: ',' })
+  ));
+test('it returns a promise if any of the iterator element are promises', t =>
+  format([{ a: 1 }, 'value', 2, Promise.resolve(5)]).then(v =>
+    t.is('{"a":1}value25', v)
+  ));
+test('it returns a promise if any of the iterator element is an async function', t =>
+  Promise.all([
+    format([{ a: 1 }, 'value', 2, async () => 5]).then(v =>
+      t.is('{"a":1}value25', v)
+    ),
+    format([{ a: 1 }, 'value', 2, () => Promise.resolve(5)]).then(v =>
+      t.is('{"a":1}value25', v)
+    )
+  ]));
