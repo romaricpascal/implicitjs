@@ -1,7 +1,7 @@
 {
   "name": "omniformat",
   "version": "0.1.0-0",
-  "description": "Template for NodeJS projects",
+  "description": "Formats strings from any kind of objects",
   "main": "src/index.js",
   "engines": {
     "node": ">=8.12.0"
