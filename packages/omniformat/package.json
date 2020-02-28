@@ -1,5 +1,5 @@
 {
-  "name": "project-template-node",
+  "name": "omniformat",
   "version": "0.0.1",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhumaric/project-template-node.git"
+    "url": "git+https://github.com/rhumaric/omniformat.git"
   },
   "author": "Romaric Pascal <hello@romaricpascal.is>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rhumaric/project-template-node/issues"
+    "url": "https://github.com/rhumaric/omniformat/issues"
   },
-  "homepage": "https://github.com/rhumaric/project-template-node#readme",
+  "homepage": "https://github.com/rhumaric/omniformat#readme",
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
