@@ -1,82 +1,77 @@
 process-template-literals-expressions
 ===
 
-A helper library that lets you process expressions within template literals.
-This opens the door to:
+A helper library that lets you process expressions within template literals,
+synchronously or asynchronously.
+
+Coupled with omniformat, it opens the door to:
 
 ```js
-const p = require('process-template-literals-expressions');
+const createProcessorTag = require('process-template-literals');
+const omniformat = require('omniformat');
+// Wrap omniformat to provide our custom configuration
+function formatter(expression) {
+  return omniformat(expression, {iteratorJoinString: ' '});
+}
+// Create our tag to process each expression with our formatter
+const tag = createProcessorTag(({ strings, expressions }) => {
+  const processedExpressions = expressions.map(formatter);
+  // Handle that some of the formatted values might have been promises
+  if (processedExpressions.some(v => v instanceof Promise)) {
+    return Promise.all(processedExpressions).then(
+      fullfilledProcessedExpressions => ({
+        strings,
+        expressions: fullfilledProcessedExpressions
+      })
+    );
+  }
+  // If none are Promises, we can keep things synchronous
+  return { strings, expressions: processedExpressions };
+});
 
 // Running the function
-p`Look, ${() => 'a plane'}` // 'Look, a plane'
+tag`Look, ${() => 'a plane'}` // 'Look, a plane'
 // Joining array elements
-p`Look, ${['a', 'plane']}` // 'Look, a plane'
+tag`Look, ${['a', 'plane']}` // 'Look, a plane'
 // Stringifying objects
-p`Look, ${{a: 'a', plane: 'plane'}}` // 'Look, {"a": "a", "plane": "plane"}
+tag`Look, ${{a: 'a', plane: 'plane'}}` // 'Look, {"a": "a", "plane": "plane"}
 // Awaiting promises
 const promiseForAPlane = Promise.resolve('a plane');
-p`Look, ${promiseForAPlane}`.then(console.log) // Logs 'Look, a plane'
+tag`Look, ${promiseForAPlane}`.then(console.log) // Logs 'Look, a plane'
 // Or async functions
-p`Look, ${async () => promiseForAPlane}`.then(console.log);
+tag`Look, ${async () => 'a plane'}`.then(console.log);
 ```
 
-Processing options
+Lazy behaviour
 ---
 
-### Numbers and Strings
+By default tags will run as soon as invoked. If you prefer creating a function to invoke later, you can use the `lazy` option.
 
-These are just passed to the function itself, you could [provide your own processor][custom-processor] to escape strings for example.
+### Processor signature
 
-### Objects
+The `processor` function receives an object with the following keys:
 
-`Object`s will be `JSON.stringify`ed.
+- `strings`: The list of strings from the template,
+- `expressions`: The list of expressions between the template strings.
+- `data`: Extra data passed to the
 
-### Functions
+It is expected to return an object of the same structure.
 
-`Function`s will be invoked and their results processed again.
+### Async behaviour
 
-### Promises
-
-`Promise`s will be awaited and their results processed again.
-
-### Arrays
-
-`Array`s will have each of their item processed and then joined with ' '
-
-Usage
----
-
-Besides tagging templates, you can use the function to create your
-own tags, with custom processing or behaviour.
-
-Future
----
-
-Possible enhancements for the function:
-
-### Handle dates
-
-Provide a way to format dates. It'll probably need a `{dateFormatter: Function}` option to customize how dates are rendered.
-
-### Async behaviour control
-
-If any of the expression is a `Promise` or an `AsyncFunction`, the tag will return a `Promise` for the computed `string` rather than the result `string` itself. If you know you don't have any of those, you can force synchronous behaviour by passing `{async: false}` as an option.
-
-```js
-p({async: false})`Look, ${() => 'a plane'}`
-```
-
-The opposite, `async: true` will enforce asynchronous behaviour (skipping some testings);
+If the processor returns a Promise for any of the expression,
+the function will await their resolution before stitching
+the string back together.
 
 ### Lazy evaluation
 
 By default, the function will evaluate the template straight away. If you prefer it to create a function for later use, you can set `{lazy:true}` as an option.
 
-The generated function will accept a list of arguments to override the values. Maybe generate something last the second example of MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates. It breaks the string interpolation, though, so maybe provide an option for it? Maybe something like `Look, ${ref('X')}` that'll look up things in the `data` ?
+Future
+---
 
-### Custom processor
+Sometimes you might not want to output a `String` from the tag. You can imagine wanting to pipe the result into a `Stream`. The `stitch` function should live outside the main function and be left to compose with other processors. This would allow more customization on the timing of the processing of strings and expressions regarding to their "stitching". In the case of a streamed output, it's likely you'd want to do process a string, send the string, process an expression, send the expression... rather than process strings and expressions, stitch and send everything. This would also leave more flexibility as to what's used for streaming: [Node streams][node-streams], [Observables], [Callbags] (or similar functions).
 
-Customize the processing of the values, which would allow, amongst other things:
-
-- to escape CSS or HTML strings
-- to format numbers or dates
+[callbags]: https://github.com/callbag/callbag
+[observables]: http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html
+[node-streams]: https://nodejs.org/api/stream.html#stream_writable_cork
