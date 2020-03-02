@@ -39,3 +39,40 @@ test('it provides the data from the tagged call', t => {
   );
   lazyTag``(3);
 });
+test('integration with omniformat', t => {
+  const omniformat = require('omniformat');
+  function formatter(expression) {
+    return omniformat(expression, { iteratorJoinString: ' ' });
+  }
+
+  const tag = createProcessorTag(({ strings, expressions }) => {
+    const processedExpressions = expressions.map(formatter);
+    if (processedExpressions.some(v => v instanceof Promise)) {
+      return Promise.all(processedExpressions).then(
+        fullfilledProcessedExpressions => ({
+          strings,
+          expressions: fullfilledProcessedExpressions
+        })
+      );
+    }
+
+    return { strings, expressions: processedExpressions };
+  });
+
+  // Running the function
+  t.is('Look, a plane', tag`Look, ${() => 'a plane'}`); // 'Look, a plane'
+  // Joining array elements
+  t.is('Look, a plane', tag`Look, ${['a', 'plane']}`); // 'Look, a plane'
+  // Stringifying objects
+  t.is(
+    'Look, {"a":"a","plane":"plane"}',
+    tag`Look, ${{ a: 'a', plane: 'plane' }}`
+  ); // 'Look, {"a": "a", "plane": "plane"
+  // Awaiting promises
+  const promiseForAPlane = Promise.resolve('a plane');
+  return Promise.all([
+    tag`Look, ${promiseForAPlane}`.then(v => t.is('Look, a plane', v)), // Logs 'Look, a plane'
+    // Or async functions
+    tag`Look, ${async () => 'a plane'}`.then(v => t.is('Look, a plane', v))
+  ]).then(t.pass());
+});
