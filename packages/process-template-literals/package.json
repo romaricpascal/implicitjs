@@ -1,6 +1,6 @@
 {
   "name": "process-template-literals",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
   "engines": {
