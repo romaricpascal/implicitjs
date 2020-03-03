@@ -11,8 +11,13 @@ module.exports = function({ types }) {
 function maybeInjectReturn(statements, { types }) {
   for (var i = statements.length; i--; i) {
     switch (statements[i].type) {
+      // Goal is to return expressions so lets look for them
       case 'ExpressionStatement': {
         statements[i] = types.ReturnStatement(statements[i].expression);
+        return statements;
+      }
+      // If we find a return
+      case 'ReturnStatement': {
         return statements;
       }
     }

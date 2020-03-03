@@ -38,6 +38,8 @@ TODO
 
 - [x] Single expression, non string (as they're parsed as directives, like "use strict" if on their own)
 - [x] Multiple expressions, non string
+- [x] Return statements
+- [ ] Throw statements
 - [ ] Trailing function or class
 - [ ] Single expression, string
 - [ ] If statements

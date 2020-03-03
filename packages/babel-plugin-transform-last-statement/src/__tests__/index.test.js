@@ -6,11 +6,17 @@ const { resolve, dirname } = require('path');
 const transform = require('..');
 
 const macro = fileBasedTest(__filename, (t, { input }) => {
-  return transformSync(input, { plugins: [transform] }).code;
+  return transformSync(input, {
+    plugins: [transform],
+    parserOpts: {
+      allowReturnOutsideFunction: true
+    }
+  }).code;
 });
 
 test(macro, { fixtureName: 'single-expression' });
 test(macro, { fixtureName: 'multiple-expressions' });
+test(macro, { fixtureName: 'existing-return' });
 
 function fileBasedTest(testFileName, fn) {
   const macro = withFixtures(testFileName, withInput(withOutputComparison(fn)));
