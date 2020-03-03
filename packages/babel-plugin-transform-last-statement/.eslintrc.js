@@ -24,7 +24,8 @@ module.exports = {
         // We don't really care about whether vars are used
         // or existing in our examples
         "no-unused-vars": 0,
-        "no-undef": 0
+        "no-undef": 0,
+        "no-with": 0
       }
     }
   ]

@@ -43,7 +43,7 @@ TODO
 - [x] Trailing function or class
 - [ ] Single expression, string
 - [x] If statements
-- [x] With statements => Not allowed in string mode so taken care of
+- [x] With statements
 - [x] Block statements
 - [ ] Labelled statements
 - [ ] Switch statements

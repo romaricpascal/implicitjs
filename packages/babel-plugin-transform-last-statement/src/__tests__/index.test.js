@@ -6,11 +6,13 @@ const { resolve, dirname, relative } = require('path');
 const { sync: glob } = require('fast-glob');
 const transform = require('..');
 
-const macro = fileBasedTest(__filename, (t, { input }) => {
+const macro = fileBasedTest(__filename, (t, { fixtureName, input }) => {
   return transformSync(input, {
     plugins: [transform],
     parserOpts: {
-      allowReturnOutsideFunction: true
+      allowReturnOutsideFunction: true,
+      // For testing with blocks
+      strictMode: !/^with/.test(fixtureName)
     }
   }).code;
 });
