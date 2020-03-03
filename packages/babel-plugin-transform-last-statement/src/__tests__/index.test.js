@@ -2,7 +2,8 @@ const test = require('ava');
 const testname = require('testname');
 const { transformSync } = require('@babel/core');
 const { readFileSync } = require('fs');
-const { resolve, dirname } = require('path');
+const { resolve, dirname, relative } = require('path');
+const { sync: glob } = require('fast-glob');
 const transform = require('..');
 
 const macro = fileBasedTest(__filename, (t, { input }) => {
@@ -14,14 +15,15 @@ const macro = fileBasedTest(__filename, (t, { input }) => {
   }).code;
 });
 
-test.serial(macro, { fixtureName: 'single-expression' });
-test.serial(macro, { fixtureName: 'multiple-expressions' });
-test.serial(macro, { fixtureName: 'existing-return' });
-test.serial(macro, { fixtureName: 'existing-throw' });
-test.serial(macro, { fixtureName: 'trailing-function' });
-test.serial(macro, { fixtureName: 'if-statement' });
-test.serial(macro, { fixtureName: 'nested-ifs' });
-test.serial(macro, { fixtureName: 'else-if' });
+// Use some globbing to generate tests based on the files in __fixtures__
+const fixtures = glob(resolve(fixturesPath(__filename), '**', '*.input.js'));
+
+fixtures
+  .map(path => relative(fixturesPath(__filename), path))
+  .map(dropAllExtensions)
+  .forEach(fixtureName => {
+    test(macro, { fixtureName });
+  });
 
 function fileBasedTest(testFileName, fn) {
   const macro = withFixtures(testFileName, withInput(withOutputComparison(fn)));
@@ -32,11 +34,7 @@ function fileBasedTest(testFileName, fn) {
 function withFixtures(testFileName, fn) {
   return function(t, options) {
     return fn(t, {
-      fixturesPath: resolve(
-        dirname(testFileName),
-        '__fixtures__',
-        testname(testFileName)
-      ),
+      fixturesPath: fixturesPath(testFileName),
       ...options
     });
   };
@@ -70,4 +68,14 @@ function withOutputComparison(fn) {
     const result = fn(t, { compare, ...options });
     compare(result);
   };
+}
+
+function fixturesPath(testFileName) {
+  return resolve(dirname(testFileName), '__fixtures__', testname(testFileName));
+}
+
+function dropAllExtensions(filename) {
+  const indexOfFirstDot = filename.indexOf('.');
+  if (indexOfFirstDot === -1) return filename;
+  return filename.substring(0, indexOfFirstDot);
 }
