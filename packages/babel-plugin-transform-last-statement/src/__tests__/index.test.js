@@ -14,11 +14,14 @@ const macro = fileBasedTest(__filename, (t, { input }) => {
   }).code;
 });
 
-test(macro, { fixtureName: 'single-expression' });
-test(macro, { fixtureName: 'multiple-expressions' });
-test(macro, { fixtureName: 'existing-return' });
-test(macro, { fixtureName: 'existing-throw' });
-test(macro, { fixtureName: 'trailing-function' });
+test.serial(macro, { fixtureName: 'single-expression' });
+test.serial(macro, { fixtureName: 'multiple-expressions' });
+test.serial(macro, { fixtureName: 'existing-return' });
+test.serial(macro, { fixtureName: 'existing-throw' });
+test.serial(macro, { fixtureName: 'trailing-function' });
+test.serial(macro, { fixtureName: 'if-statement' });
+test.serial(macro, { fixtureName: 'nested-ifs' });
+test.serial(macro, { fixtureName: 'else-if' });
 
 function fileBasedTest(testFileName, fn) {
   const macro = withFixtures(testFileName, withInput(withOutputComparison(fn)));
@@ -55,7 +58,6 @@ function withOutputComparison(fn) {
     const compare = output => {
       if (!compared) {
         compared = true;
-        console.log('Comparing', '\n', output, '\n');
         return t.is(
           output.replace(/\s/g, ''),
           readFileSync(

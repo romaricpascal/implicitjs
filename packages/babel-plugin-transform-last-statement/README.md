@@ -40,9 +40,12 @@ TODO
 - [x] Multiple expressions, non string
 - [x] Return statements
 - [x] Throw statements
-- [ ] Trailing function or class
+- [x] Trailing function or class
 - [ ] Single expression, string
-- [ ] If statements
+- [x] If statements
+- [ ] With statements
+- [ ] Block statements
+- [ ] Labelled statements
 - [ ] Switch statements
 - [ ] Try statements
 - [ ] Check arrow functions, as well as nested functions

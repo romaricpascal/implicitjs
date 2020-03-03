@@ -2,28 +2,57 @@ module.exports = function({ types }) {
   return {
     visitor: {
       Program(path) {
-        path.node.body = maybeInjectReturn(path.node.body, { types });
+        maybeInjectReturn(path.node, { types });
       }
     }
   };
 };
 
-function maybeInjectReturn(statements, { types }) {
-  for (var i = statements.length; i--; i) {
-    switch (statements[i].type) {
-      // Goal is to return expressions so lets look for them
-      case 'ExpressionStatement': {
-        statements[i] = types.ReturnStatement(statements[i].expression);
-        return statements;
+function maybeInjectReturn(node, { types }) {
+  switch (node.type) {
+    // Goal is to return expressions so lets look for them
+    case 'ExpressionStatement': {
+      return types.ReturnStatement(node.expression);
+    }
+    // If we find a return or throw, we skip
+    case 'ReturnStatement':
+    case 'ThrowStatement': {
+      return false;
+    }
+    case 'IfStatement': {
+      const updatedConsequent = maybeInjectReturn(node.consequent, { types });
+      if (updatedConsequent) {
+        node.consequent = updatedConsequent;
       }
-      // If we find a return
-      case 'ReturnStatement': {
-        return statements;
+      if (node.alternate) {
+        const updatedAlternate = maybeInjectReturn(node.alternate, { types });
+        if (updatedAlternate) {
+          node.alternate = updatedAlternate;
+        }
       }
-      case 'ThrowStatement': {
-        return statements;
+      // Either we'll have injected returns as needed
+      // or there will have been some returns already
+      // so we can stop there
+      return false;
+    }
+    // Blocks and Programs will have multiple statements
+    // in their body, we'll need to traverse it last to first
+    case 'BlockStatement':
+    case 'Program': {
+      for (var i = node.body.length; i--; i) {
+        // Get a possibly updated node
+        const updatedNode = maybeInjectReturn(node.body[i], { types });
+        if (updatedNode) {
+          // Replace the node if we updated
+          node.body[i] = updatedNode;
+        }
+        // And stop processing if we returned anything:
+        // - a node meant we injected the return
+        // - a false meant we already had a return or throw
+        if (typeof updatedNode !== 'undefined') {
+          return false;
+        }
       }
     }
   }
-  return statements;
 }
