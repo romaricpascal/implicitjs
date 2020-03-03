@@ -20,6 +20,9 @@ function maybeInjectReturn(statements, { types }) {
       case 'ReturnStatement': {
         return statements;
       }
+      case 'ThrowStatement': {
+        return statements;
+      }
     }
   }
   return statements;

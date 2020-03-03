@@ -17,6 +17,7 @@ const macro = fileBasedTest(__filename, (t, { input }) => {
 test(macro, { fixtureName: 'single-expression' });
 test(macro, { fixtureName: 'multiple-expressions' });
 test(macro, { fixtureName: 'existing-return' });
+test(macro, { fixtureName: 'existing-throw' });
 
 function fileBasedTest(testFileName, fn) {
   const macro = withFixtures(testFileName, withInput(withOutputComparison(fn)));
