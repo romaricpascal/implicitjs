@@ -11,7 +11,9 @@ module.exports = {
       ],
       rules: {
         // Tests will require dev only packages
-        "node/no-unpublished-require": 0
+        "node/no-unpublished-require": 0,
+        // Allow extraneous require to use a local the `node_modules`
+        "node/no-extraneous-require": 0
       }
     }
   ]
