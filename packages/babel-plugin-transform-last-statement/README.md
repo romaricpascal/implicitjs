@@ -1,4 +1,4 @@
-babel-plugin-transform-return-last-expression
+babel-plugin-transform-last-statement
 ===
 
 A Babel plugin to return the last expressions in functions automatically.
