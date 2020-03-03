@@ -47,7 +47,7 @@ TODO
 - [x] Block statements
 - [ ] Labelled statements
 - [ ] Switch statements
-- [ ] Try statements
+- [x] Try statements
 - [ ] Check arrow functions, as well as nested functions
 - [ ] Option for injecting a top level return
 - [ ] Maintain comments before the function

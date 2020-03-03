@@ -43,6 +43,19 @@ function maybeInjectReturn(node, options) {
       }
       return false;
     }
+    // We only want to mess with the `try` block
+    // `catch` might yield unexpected values being returned
+    // so best leave to an explicit return
+    // `finally` is even worse: it would return before the `try`
+    // so a definite no go:
+    // https://eslint.org/docs/rules/no-unsafe-finally
+    case 'TryStatement': {
+      const updatedNode = maybeInjectReturn(node.block, options);
+      if (updatedNode) {
+        node.block = updatedNode;
+      }
+      return false;
+    }
     // Blocks and Programs will have multiple statements
     // in their body, we'll need to traverse it last to first
     case 'BlockStatement':
