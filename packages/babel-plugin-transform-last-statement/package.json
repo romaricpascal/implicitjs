@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/rhumaric/babel-plugin-transform-return-last-expression#readme",
   "devDependencies": {
+    "@babel/core": "^7.8.6",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
     "ava": "^2.3.0",

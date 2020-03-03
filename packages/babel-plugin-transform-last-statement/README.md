@@ -36,8 +36,8 @@ The transform will only return expressions, not final `function` (as they get ho
 TODO
 ---
 
-- [ ] Single expression, non string (as they're parsed as directives, like "use strict" if on their own)
-- [ ] Multiple expressions, non string
+- [x] Single expression, non string (as they're parsed as directives, like "use strict" if on their own)
+- [x] Multiple expressions, non string
 - [ ] Trailing function or class
 - [ ] Single expression, string
 - [ ] If statements
