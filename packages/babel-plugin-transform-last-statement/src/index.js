@@ -15,8 +15,11 @@ function maybeInjectReturn(node, options) {
       return options.types.ReturnStatement(node.expression);
     }
     // If we find a return or throw, we skip
+    // Same with debugger; statements,
+    // which shouldn't be short-circuited by an early return
     case 'ReturnStatement':
-    case 'ThrowStatement': {
+    case 'ThrowStatement':
+    case 'DebuggerStatement': {
       return false;
     }
     case 'IfStatement': {

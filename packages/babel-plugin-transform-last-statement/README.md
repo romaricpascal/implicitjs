@@ -40,7 +40,7 @@ TODO
   - [x] ExpressionStatement
   - [x] BlockStatement
   - [x] EmptyStatement
-  - [ ] DebuggerStatement
+  - [x] DebuggerStatement
   - [x] WithStatement
   - [ ] Control flow
     - [x] ReturnStatement

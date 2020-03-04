@@ -25,7 +25,8 @@ module.exports = {
         // or existing in our examples
         "no-unused-vars": 0,
         "no-undef": 0,
-        "no-with": 0
+        "no-with": 0,
+        "no-debugger": 0
       }
     }
   ]
