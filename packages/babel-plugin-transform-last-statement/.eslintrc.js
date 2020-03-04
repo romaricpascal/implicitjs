@@ -25,9 +25,14 @@ module.exports = {
         // or existing in our examples
         "no-unused-vars": 0,
         "no-undef": 0,
+        // with are generally not recommended, but it's a case we need to handle
         "no-with": 0,
         "no-debugger": 0,
-        "no-unused-labels": 0
+        // This would remove the labels when saving so we disable the rules
+        "no-unused-labels": 0,
+        // Not recommended to declare functions in ifs, cases...
+        // but we need to check if we play nice with it
+        "no-inner-declarations": 0
       }
     }
   ]
