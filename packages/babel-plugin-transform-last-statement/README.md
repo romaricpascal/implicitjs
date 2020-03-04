@@ -61,8 +61,8 @@ TODO
     - [ ] ForStatement
     - [ ] ForInStatement
     - [ ] ForOfStatement
-  - [ ] Declarations
-    - [ ] Variable declaration
+  - [x] Declarations
+    - [x] Variable declaration (Doesn't make sense to declare a variable to be returned as last statement, might as well write the return directly)
     - [x] Function declaration (Use explicit return for functions, as they might be last to make the code more readable, taking advantage of hoisting)
 - [x] Nesting - Handle the 3 places to return from
   - [x] Top level program
