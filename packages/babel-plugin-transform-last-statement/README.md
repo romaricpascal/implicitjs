@@ -64,12 +64,12 @@ TODO
   - [ ] Declarations
     - [ ] Variable declaration
     - [x] Function declaration (Use explicit return for functions, as they might be last to make the code more readable, taking advantage of hoisting)
-- [ ] Nesting - Handle the 3 places to return from
+- [x] Nesting - Handle the 3 places to return from
   - [x] Top level program
   - [x] Functions
   - [x] Arrow functions
   - [x] Option for enabling the top level return
-- [ ] Maintain comments
+- [x] Maintain comments
 - [ ] Sourcemaps
 
 [babel-parser-spec]: https://github.com/babel/babel/blob/master/packages/babel-parser/ast/spec.md#patterns

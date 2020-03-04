@@ -8,7 +8,10 @@ const transform = require('..');
 
 const macro = fileBasedTest(__filename, (t, { fixtureName, input }) => {
   return transformSync(input, {
+    // Control whether to allow top-level through filename
     plugins: [[transform, { topLevel: !/no-top-level/.test(fixtureName) }]],
+    // Control if Babel should output comments through filename
+    comments: /^comments/.test(fixtureName),
     parserOpts: {
       allowReturnOutsideFunction: true,
       // For testing `with` blocks

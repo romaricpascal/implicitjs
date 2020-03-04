@@ -73,7 +73,12 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     // Goal is to return expressions so lets look for them
     case 'ExpressionStatement': {
       if (options.replace) {
-        return options.types.ReturnStatement(node.expression);
+        const returnStatement = options.types.ReturnStatement(node.expression);
+        returnStatement.leadingComments = node.leadingComments;
+        returnStatement.trailingComments = node.trailingComments;
+        node.leadingComments = null;
+        node.trailingComments = null;
+        return returnStatement;
       }
       return;
     }
