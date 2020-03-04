@@ -8,7 +8,35 @@ module.exports = function({ types }) {
   };
 };
 
-function maybeInjectReturn(node, options) {
+function maybeInjectReturn(node, { key, ...options } = {}) {
+  // If provided a key, we're looking to inject return for
+  // a specific key of the node
+  if (typeof key !== 'undefined') {
+    const updatedNode = maybeInjectReturn(node[key], options);
+    if (updatedNode) {
+      node[key] = updatedNode;
+    }
+    if (typeof updatedNode !== 'undefined') {
+      return false;
+    }
+    return;
+  }
+
+  // If provided an Array, we're looking to iterate over the nodes,
+  // last to first.
+  // IMPORTANT: This needs to be after the check for the key
+  // to avoid infinite loop when calling
+  if (Array.isArray(node)) {
+    for (var i = node.length; i--; i) {
+      const updatedNode = maybeInjectReturn(node, { key: i, ...options });
+      // Stop iteracting as soon as
+      if (typeof updatedNode !== 'undefined') {
+        return false;
+      }
+    }
+    return node;
+  }
+
   switch (node.type) {
     // Goal is to return expressions so lets look for them
     case 'ExpressionStatement': {
@@ -23,15 +51,9 @@ function maybeInjectReturn(node, options) {
       return false;
     }
     case 'IfStatement': {
-      const updatedConsequent = maybeInjectReturn(node.consequent, options);
-      if (updatedConsequent) {
-        node.consequent = updatedConsequent;
-      }
+      maybeInjectReturn(node, { key: 'consequent', ...options });
       if (node.alternate) {
-        const updatedAlternate = maybeInjectReturn(node.alternate, options);
-        if (updatedAlternate) {
-          node.alternate = updatedAlternate;
-        }
+        maybeInjectReturn(node, { key: 'alternate', ...options });
       }
       // Either we'll have injected returns as needed
       // or there will have been some returns already
@@ -42,10 +64,8 @@ function maybeInjectReturn(node, options) {
     // and so do labeledstatements
     case 'LabeledStatement':
     case 'WithStatement': {
-      const updatedNode = maybeInjectReturn(node.body, options);
-      if (updatedNode) {
-        node.body = updatedNode;
-      }
+      maybeInjectReturn(node, { key: 'body', ...options });
+      // TODO: Handle labelled function declarations
       return false;
     }
     // We only want to mess with the `try` block
@@ -55,30 +75,18 @@ function maybeInjectReturn(node, options) {
     // so a definite no go:
     // https://eslint.org/docs/rules/no-unsafe-finally
     case 'TryStatement': {
-      const updatedNode = maybeInjectReturn(node.block, options);
-      if (updatedNode) {
-        node.block = updatedNode;
-      }
+      maybeInjectReturn(node, { key: 'block', ...options });
       return false;
     }
     // Blocks and Programs will have multiple statements
     // in their body, we'll need to traverse it last to first
     case 'BlockStatement':
     case 'Program': {
-      for (var i = node.body.length; i--; i) {
-        // Get a possibly updated node
-        const updatedNode = maybeInjectReturn(node.body[i], options);
-        if (updatedNode) {
-          // Replace the node if we updated
-          node.body[i] = updatedNode;
-        }
-        // And stop processing if we returned anything:
-        // - a node meant we injected the return
-        // - a false meant we already had a return or throw
-        if (typeof updatedNode !== 'undefined') {
-          return false;
-        }
+      const update = maybeInjectReturn(node, { key: 'body', ...options });
+      if (typeof update !== 'undefined') {
+        return false;
       }
+      return;
     }
   }
 }

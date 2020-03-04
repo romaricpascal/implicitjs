@@ -11,7 +11,7 @@ const macro = fileBasedTest(__filename, (t, { fixtureName, input }) => {
     plugins: [transform],
     parserOpts: {
       allowReturnOutsideFunction: true,
-      // For testing with blocks
+      // For testing `with` blocks
       strictMode: !/^with/.test(fixtureName)
     }
   }).code;
