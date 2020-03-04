@@ -32,7 +32,12 @@ module.exports = {
         "no-unused-labels": 0,
         // Not recommended to declare functions in ifs, cases...
         // but we need to check if we play nice with it
-        "no-inner-declarations": 0
+        "no-inner-declarations": 0,
+        // Switch only adds return and leaves the removal
+        // of unreachable `break` to other tools
+        "no-unreachable": 0,
+        // And we need to handle fallthrough gracefully
+        "no-fallthrough": 0
       }
     }
   ]

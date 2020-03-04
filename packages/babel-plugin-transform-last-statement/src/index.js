@@ -9,6 +9,11 @@ module.exports = function({ types }) {
 };
 
 function maybeInjectReturn(node, { key, ...options } = {}) {
+  // By default we want replacements to happen
+  // unless a SwitchCase turns that off
+  if (typeof options.replace === 'undefined') {
+    options.replace = true;
+  }
   // If provided a key, we're looking to inject return for
   // a specific key of the node
   if (typeof key !== 'undefined') {
@@ -27,8 +32,20 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
   // IMPORTANT: This needs to be after the check for the key
   // to avoid infinite loop when calling
   if (Array.isArray(node)) {
+    // For switches we want to only replace after we found a BreakStatement
+    // We carry on the value for replacement
+    let replace = options.afterBreak ? options.replace : true;
     for (var i = node.length; i--; i) {
-      const updatedNode = maybeInjectReturn(node, { key: i, ...options });
+      // And inject whichever value we found for our replacement
+      const updatedNode = maybeInjectReturn(node, {
+        key: i,
+        ...options,
+        replace
+      });
+      // Once we found a 'BreakStatement' we start replacing
+      if (node[i].type === 'BreakStatement') {
+        replace = true;
+      }
       // Stop iteracting as soon as
       if (typeof updatedNode !== 'undefined') {
         return false;
@@ -40,7 +57,10 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
   switch (node.type) {
     // Goal is to return expressions so lets look for them
     case 'ExpressionStatement': {
-      return options.types.ReturnStatement(node.expression);
+      if (options.replace) {
+        return options.types.ReturnStatement(node.expression);
+      }
+      return;
     }
     // If we find a return or throw, we skip
     // Same with debugger; statements,
@@ -88,5 +108,35 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
       }
       return;
     }
+    // `switch` statements need their own processing
+    // - each case/default statement can either host a block or an array of statements
+    // - we should only inject returns after we found a "break" in `case` statements.
+    //   The following `case`/`default` gets run
+    //   if there is no `break` and adding a return would prevent that.
+    //   While it's recommended not to fallthrough (https://eslint.org/docs/rules/no-fallthrough)
+    //   there are some valid use cases, so we need to handle it
+    case 'SwitchStatement': {
+      node.cases.forEach(switchCase => {
+        maybeInjectReturn(switchCase, {
+          ...options,
+          key: 'consequent',
+          afterBreak: !!switchCase.test, // Only replace if a break exists for `case`, not `default`
+          replace: false
+        });
+      });
+      return false;
+    }
   }
+}
+
+// Little utility for outputing the name of a node
+// cleanly (that is without dumping a whole object
+// in the console)
+// eslint-disable-next-line no-unused-vars
+function nodeDebugName(node) {
+  if (typeof node === 'undefined') return 'undefined';
+  if (Array.isArray(node)) {
+    return 'Array';
+  }
+  return (node && node.type) || node;
 }

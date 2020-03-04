@@ -49,8 +49,8 @@ TODO
     - [ ] ContinueStatement
   - [ ] Choice
     - [x] IfStatement
-    - [ ] SwitchStatement
-    - [ ] SwitchCase
+    - [x] SwitchStatement
+    - [x] SwitchCase: Only adds return in a block where a `break` is set to allow fall through
   - [ ] Exceptions
     - [x] TryStatement
     - [x] ThrowStatement
