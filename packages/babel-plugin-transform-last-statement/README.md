@@ -44,7 +44,7 @@ TODO
   - [x] WithStatement
   - [ ] Control flow
     - [x] ReturnStatement
-    - [ ] LabeledStatement
+    - [x] LabeledStatement
     - [ ] BreakStatement
     - [ ] ContinueStatement
   - [ ] Choice

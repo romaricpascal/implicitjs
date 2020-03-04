@@ -39,6 +39,8 @@ function maybeInjectReturn(node, options) {
       return false;
     }
     // `with` blocks only have one body
+    // and so do labeledstatements
+    case 'LabeledStatement':
     case 'WithStatement': {
       const updatedNode = maybeInjectReturn(node.body, options);
       if (updatedNode) {
