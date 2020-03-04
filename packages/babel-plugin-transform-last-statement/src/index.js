@@ -1,10 +1,6 @@
-module.exports = function({ types }) {
-  return {
+module.exports = function({ types }, { topLevel }) {
+  const plugin = {
     visitor: {
-      // Top level returns
-      Program(path) {
-        maybeInjectReturn(path.node.body, { types });
-      },
       // Named functions (sync or async)
       FunctionDeclaration(path) {
         maybeInjectReturn(path.node.body, { types });
@@ -19,6 +15,12 @@ module.exports = function({ types }) {
       }
     }
   };
+  if (topLevel) {
+    plugin.visitor.Program = function Program(path) {
+      maybeInjectReturn(path.node.body, { types });
+    };
+  }
+  return plugin;
 };
 
 function maybeInjectReturn(node, { key, ...options } = {}) {

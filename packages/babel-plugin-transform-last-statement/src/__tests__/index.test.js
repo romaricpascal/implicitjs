@@ -8,7 +8,7 @@ const transform = require('..');
 
 const macro = fileBasedTest(__filename, (t, { fixtureName, input }) => {
   return transformSync(input, {
-    plugins: [transform],
+    plugins: [[transform, { topLevel: !/no-top-level/.test(fixtureName) }]],
     parserOpts: {
       allowReturnOutsideFunction: true,
       // For testing `with` blocks

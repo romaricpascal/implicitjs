@@ -68,7 +68,7 @@ TODO
   - [x] Top level program
   - [x] Functions
   - [x] Arrow functions
-  - [ ] Option for enabling the top level return
+  - [x] Option for enabling the top level return
 - [ ] Maintain comments
 - [ ] Sourcemaps
 
