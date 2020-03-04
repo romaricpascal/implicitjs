@@ -36,18 +36,37 @@ The transform will only return expressions, not final `function` (as they get ho
 TODO
 ---
 
-- [x] Single expression, non string (as they're parsed as directives, like "use strict" if on their own)
-- [x] Multiple expressions, non string
-- [x] Return statements
-- [x] Throw statements
-- [x] Trailing function or class
-- [ ] Single expression, string
-- [x] If statements
-- [x] With statements
-- [x] Block statements
-- [ ] Labelled statements
-- [ ] Switch statements
-- [x] Try statements
-- [ ] Check arrow functions, as well as nested functions
-- [ ] Option for injecting a top level return
-- [ ] Maintain comments before the function
+- [ ] Handle the various kinds of statements (full list from [Babel parser's spec][babel-parser-spec])
+  - [x] ExpressionStatement
+  - [x] BlockStatement
+  - [x] EmptyStatement
+  - [ ] DebuggerStatement
+  - [x] WithStatement
+  - [ ] Control flow
+    - [x] ReturnStatement
+    - [ ] LabeledStatement
+    - [ ] BreakStatement
+    - [ ] ContinueStatement
+  - [ ] Choice
+    - [x] IfStatement
+    - [ ] SwitchStatement
+    - [ ] SwitchCase
+  - [ ] Exceptions
+    - [x] TryStatement
+    - [x] ThrowStatement
+    - [x] CatchClause (Do nothing, too risky)
+  - [ ] Loops
+    - [ ] WhileStatement
+    - [ ] DoWhileStatement
+    - [ ] ForStatement
+    - [ ] ForInStatement
+    - [ ] ForOfStatement
+- [ ] Handle the 3 places to return from
+  - [ ] Top level program
+  - [ ] Functions
+  - [ ] Arrow functions
+  - [ ] Option for enabling the top level return
+- [ ] Maintain comments
+- [ ] Sourcemaps
+
+[babel-parser-spec]: https://github.com/babel/babel/blob/master/packages/babel-parser/ast/spec.md#patterns
