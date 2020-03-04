@@ -61,6 +61,9 @@ TODO
     - [ ] ForStatement
     - [ ] ForInStatement
     - [ ] ForOfStatement
+  - [ ] Declarations
+    - [ ] Variable declaration
+    - [x] Function declaration (Use explicit return for functions, as they might be last to make the code more readable, taking advantage of hoisting)
 - [ ] Handle the 3 places to return from
   - [ ] Top level program
   - [ ] Functions
