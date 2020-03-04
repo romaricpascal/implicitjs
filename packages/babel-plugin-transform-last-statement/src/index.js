@@ -1,8 +1,21 @@
 module.exports = function({ types }) {
   return {
     visitor: {
+      // Top level returns
       Program(path) {
-        maybeInjectReturn(path.node, { types });
+        maybeInjectReturn(path.node.body, { types });
+      },
+      // Named functions (sync or async)
+      FunctionDeclaration(path) {
+        maybeInjectReturn(path.node.body, { types });
+      },
+      // Anonymous functions
+      FunctionExpression(path) {
+        maybeInjectReturn(path.node.body, { types });
+      },
+      // Arrow (`() => {}`) functions
+      ArrowFunctionExpression(path) {
+        maybeInjectReturn(path.node.body, { types });
       }
     }
   };
@@ -98,10 +111,9 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
       maybeInjectReturn(node, { key: 'block', ...options });
       return false;
     }
-    // Blocks and Programs will have multiple statements
+    // Blocks will have multiple statements
     // in their body, we'll need to traverse it last to first
-    case 'BlockStatement':
-    case 'Program': {
+    case 'BlockStatement': {
       const update = maybeInjectReturn(node, { key: 'body', ...options });
       if (typeof update !== 'undefined') {
         return false;
