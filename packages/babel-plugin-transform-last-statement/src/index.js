@@ -1,18 +1,38 @@
+// # babel-plugin-transform-last-statement
+
+// ## The plugin itself
+/**
+ * Creates the plugin itself, grabbing what's needed from
+ * the babel object set by Babel and the options passed by the configuration
+ * @param {Object} babel
+ * @param {Object} babel.types - The types
+ * @param {Object} options
+ * @param {boolean} [options.topLevel=false] - Whether to process the last statement of the program
+ */
 module.exports = function({ types }, { topLevel }) {
   const plugin = {
     visitor: {
-      // Named functions (sync or async)
+      // Named functions (sync or async): `function template() {}`
       FunctionDeclaration(path) {
         maybeInjectReturn(path.node.body, { types, scope: path.scope });
       },
-      // Anonymous functions
+      // Anonymous functions: `const a = function() {}`
       FunctionExpression(path) {
         maybeInjectReturn(path.node.body, { types, scope: path.scope });
       },
-      // Arrow (`() => {}`) functions
+      // Arrow functions: `() => {}`
       ArrowFunctionExpression(path) {
         maybeInjectReturn(path.node.body, { types, scope: path.scope });
       },
+      // Class methods
+      // ```js
+      // class aClass() {
+      //   get property() {}
+      //   set property(value) {}
+      //   method() {}
+      //   static staticMethod() {}
+      // }
+      // ```
       ClassMethod(path) {
         // Ignore constructors as there's no point injecting anything there
         // given their return value isn't actually returned to caller
@@ -20,6 +40,16 @@ module.exports = function({ types }, { topLevel }) {
           maybeInjectReturn(path.node.body, { types, scope: path.scope });
         }
       },
+      // Object methods
+      // ```js
+      // {
+      //   get property() {}
+      //   set property(value) {}
+      //   method() {}
+      //   // key: function() {}
+      //   // is a FunctionExpression
+      // }
+      // ```
       ObjectMethod(path) {
         maybeInjectReturn(path.node.body, { types, scope: path.scope });
       }
@@ -33,10 +63,22 @@ module.exports = function({ types }, { topLevel }) {
   return plugin;
 };
 
+// ## AST Traversal
+// Because we need to traverse the statements last to first
+// we need a custom traversal.
+/**
+ * Traverse the given node or array of nodes recursively to look for
+ * last statements to process.
+ * @param {Object|Array} node - The node or array of nodes to traverse
+ * @param {Object} options
+ * @param {Object} scope - The Babel `scope`, used for generating new identifiers
+ * @param {Object} types - The Babel `types`, used for creating new nodes
+ * @param {String|number} [key] - An optional key to look into on the given node (can also be an array index)
+ * @param {boolean} [replace=true] - Whether to do the replacement or not (so fallthrough `case`s can be supported)
+ * @param {Object} [resultsIdentifier] - An Identifier node into which to `push` the last statements of loops instead of returning them
+ * @returns {Boolean|Object|undefined} - Return a node to replace the currently processed value with, or `false` to stop processing other nodes in an array
+ */
 function maybeInjectReturn(node, { key, ...options } = {}) {
-  // Uncomment to log the traversal
-  // console.log(nodeDebugName(node));
-
   // By default we want replacements to happen
   // unless a SwitchCase turns that off
   if (typeof options.replace === 'undefined') {
@@ -46,9 +88,11 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
   // a specific key of the node
   if (typeof key !== 'undefined') {
     const updatedNode = maybeInjectReturn(node[key], options);
+    // Replace the node if the node was transformed
     if (updatedNode) {
       node[key] = updatedNode;
     }
+    // And halt the processing of current array
     if (typeof updatedNode !== 'undefined') {
       return false;
     }
@@ -70,11 +114,11 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
         ...options,
         replace
       });
-      // Once we found a 'BreakStatement' we start replacing
+      // Once we found a 'BreakStatement' we can start replacing
       if (node[i].type === 'BreakStatement') {
         replace = true;
       }
-      // Stop iteracting as soon as
+      // Stop iteracting as soon as we got something returned
       if (typeof updatedNode !== 'undefined') {
         return false;
       }
@@ -82,14 +126,24 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     return node;
   }
 
+  // ### Traversal of individual statements
   switch (node.type) {
-    // Goal is to return expressions so lets look for them
+    // Main goal is to process expressions to return them
     case 'ExpressionStatement': {
       const { types, replace, resultsIdentifier } = options;
+
+      // First we need to check if we're actually allowed
+      // to replace, in case we're in a `switch`.
+      // Note that the actuall expression to return is
+      // the `node.expression`, not the `ExpressionStatement` itself
       if (replace) {
         let statement;
+        // Now we need to process things slightly differently
+        // whether we're inside a loop or not, marked by the
+        // presence of a `resultsIdentifier` for the Array
+        // in which to `push` the results of the loop
         if (resultsIdentifier) {
-          // If we have a results identifier, create a `.push` call
+          // A bit of a mouthfull to write `<IdentifierName>.push(<NodeExpression>)`
           statement = types.ExpressionStatement(
             types.CallExpression(
               types.MemberExpression(
@@ -100,15 +154,18 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
             )
           );
         } else {
+          // In all other cases, we wrap the expression with a return
           statement = types.ReturnStatement(node.expression);
         }
+
+        // And make sure comments end up on the wrapping node
         moveComments(node, statement);
         return statement;
       }
       return;
     }
     // If we find a return or throw, we skip
-    // Same with debugger; statements,
+    // Same with `debugger;` and `continue` statements,
     // which shouldn't be short-circuited by an early return
     case 'ReturnStatement':
     case 'ThrowStatement':
@@ -116,6 +173,7 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     case 'ContinueStatement': {
       return false;
     }
+    // `if` statements need both their branches visited
     case 'IfStatement': {
       maybeInjectReturn(node, { key: 'consequent', ...options });
       if (node.alternate) {
@@ -127,11 +185,11 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
       return false;
     }
     // `with` blocks only have one body
-    // and so do labeledstatements
+    // and so do labeledstatements `label: const a = 5;`
     case 'LabeledStatement':
     case 'WithStatement': {
       maybeInjectReturn(node, { key: 'body', ...options });
-      // TODO: Handle labelled function declarations
+      // TODO: Handle labelled   function declarations
       return false;
     }
     // We only want to mess with the `try` block
@@ -144,8 +202,8 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
       maybeInjectReturn(node, { key: 'block', ...options });
       return false;
     }
-    // Blocks will have multiple statements
-    // in their body, we'll need to traverse it last to first
+    // Blocks will have multiple statements in their body,
+    // we'll need to traverse them last to first
     case 'BlockStatement': {
       const update = maybeInjectReturn(node, { key: 'body', ...options });
       if (typeof update !== 'undefined') {
@@ -193,6 +251,11 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
   }
 }
 
+// ## Supporting functions
+/**
+ * @param {Object} fromNode
+ * @param {Object} toNode
+ */
 function moveComments(fromNode, toNode) {
   toNode.leadingComments = fromNode.leadingComments;
   toNode.trailingComments = fromNode.trailingComments;
@@ -200,10 +263,20 @@ function moveComments(fromNode, toNode) {
   fromNode.trailingComments = null;
 }
 
+// We need to add a variable declaration before loops,
+// and then return that variable. Quite a block to have
+// in the main traversal, so it's in its own function instead.
+/**
+ * @param {Object} node - The loop node
+ * @param {Object} options
+ * @param {Object} options.types
+ * @param {Object} options.scope
+ * @param {Object} options.resultsIdentifier
+ */
 function wrapLoopNode(node, options) {
   const { types, scope } = options;
-  // Create a new identifier, unless a parent loop has already
-  // created one
+  // A parent loop might have already created a variable
+  // to push into, so we only create on if needed
   const identifier =
     options.resultsIdentifier || scope.generateUidIdentifier('result');
 
@@ -216,8 +289,9 @@ function wrapLoopNode(node, options) {
 
   // And finally wrap it only if we created the identifiers beforehand
   if (options.resultsIdentifier) {
-    // We'll have done some returning in the for so we can stop further iteration
-    // above
+    // Just like the other blocks, we consider that either
+    // we'll have added a return, or there was one (or a `continue`) already
+    // so we stop traversing siblings
     return false;
   } else {
     // We don't have access to `replaceWithMultiple` as we need
