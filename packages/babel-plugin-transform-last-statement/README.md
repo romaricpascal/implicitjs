@@ -36,17 +36,17 @@ The transform will only return expressions, not final `function` (as they get ho
 TODO
 ---
 
-- [ ] Handle the various kinds of statements (full list from [Babel parser's spec][babel-parser-spec])
+- [x] Handle the various kinds of statements (full list from [Babel parser's spec][babel-parser-spec])
   - [x] ExpressionStatement
   - [x] BlockStatement
   - [x] EmptyStatement
   - [x] DebuggerStatement
   - [x] WithStatement
-  - [ ] Control flow
+  - [x] Control flow
     - [x] ReturnStatement
     - [x] LabeledStatement
-    - [ ] BreakStatement
-    - [ ] ContinueStatement
+    - [x] BreakStatement => Ignore in loops, use as a trigger for starting replacement in `case`
+    - [x] ContinueStatement
   - [x] Choice
     - [x] IfStatement
     - [x] SwitchStatement
@@ -55,12 +55,12 @@ TODO
     - [x] TryStatement
     - [x] ThrowStatement
     - [x] CatchClause (Do nothing, too risky)
-  - [ ] Loops
-    - [ ] WhileStatement
-    - [ ] DoWhileStatement
-    - [ ] ForStatement
-    - [ ] ForInStatement
-    - [ ] ForOfStatement
+  - [x] Loops
+    - [x] WhileStatement
+    - [x] DoWhileStatement
+    - [x] ForStatement
+    - [x] ForInStatement
+    - [x] ForOfStatement
   - [x] Declarations
     - [x] Variable declaration (Doesn't make sense to declare a variable to be returned as last statement, might as well write the return directly)
     - [x] Function declaration (Use explicit return for functions, as they might be last to make the code more readable, taking advantage of hoisting)

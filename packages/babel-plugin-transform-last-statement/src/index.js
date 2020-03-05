@@ -3,21 +3,21 @@ module.exports = function({ types }, { topLevel }) {
     visitor: {
       // Named functions (sync or async)
       FunctionDeclaration(path) {
-        maybeInjectReturn(path.node.body, { types });
+        maybeInjectReturn(path.node.body, { types, scope: path.scope });
       },
       // Anonymous functions
       FunctionExpression(path) {
-        maybeInjectReturn(path.node.body, { types });
+        maybeInjectReturn(path.node.body, { types, scope: path.scope });
       },
       // Arrow (`() => {}`) functions
       ArrowFunctionExpression(path) {
-        maybeInjectReturn(path.node.body, { types });
+        maybeInjectReturn(path.node.body, { types, scope: path.scope });
       }
     }
   };
   if (topLevel) {
     plugin.visitor.Program = function Program(path) {
-      maybeInjectReturn(path.node.body, { types });
+      maybeInjectReturn(path.node.body, { types, scope: path.scope });
     };
   }
   return plugin;
@@ -72,13 +72,28 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
   switch (node.type) {
     // Goal is to return expressions so lets look for them
     case 'ExpressionStatement': {
-      if (options.replace) {
-        const returnStatement = options.types.ReturnStatement(node.expression);
-        returnStatement.leadingComments = node.leadingComments;
-        returnStatement.trailingComments = node.trailingComments;
+      const { types, replace, resultsIdentifier } = options;
+      if (replace) {
+        let statement;
+        if (resultsIdentifier) {
+          // If we have a results identifier, create a `.push` call
+          statement = types.ExpressionStatement(
+            types.CallExpression(
+              types.MemberExpression(
+                resultsIdentifier,
+                types.Identifier('push')
+              ),
+              [node.expression]
+            )
+          );
+        } else {
+          statement = types.ReturnStatement(node.expression);
+        }
+        statement.leadingComments = node.leadingComments;
+        statement.trailingComments = node.trailingComments;
         node.leadingComments = null;
         node.trailingComments = null;
-        return returnStatement;
+        return statement;
       }
       return;
     }
@@ -87,7 +102,8 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     // which shouldn't be short-circuited by an early return
     case 'ReturnStatement':
     case 'ThrowStatement':
-    case 'DebuggerStatement': {
+    case 'DebuggerStatement':
+    case 'ContinueStatement': {
       return false;
     }
     case 'IfStatement': {
@@ -145,6 +161,52 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
       });
       return false;
     }
+    // Loops need their own processing too. We need to aggregate their data
+    // in an array and then return that array
+    case 'ForStatement':
+    case 'DoWhileStatement':
+    case 'WhileStatement':
+    case 'ForInStatement':
+    case 'ForOfStatement': {
+      return wrapLoopNode(node, options);
+    }
+  }
+}
+
+function wrapLoopNode(node, options) {
+  const { types, scope } = options;
+  // Create a new identifier, unless a parent loop has already
+  // created one
+  const identifier =
+    options.resultsIdentifier || scope.generateUidIdentifier('result');
+
+  // Then we can process the content of the loop
+  maybeInjectReturn(node, {
+    ...options,
+    key: 'body',
+    resultsIdentifier: identifier
+  });
+
+  // And finally wrap it only if we created the identifiers beforehand
+  if (options.resultsIdentifier) {
+    // We'll have done some returning in the for so we can stop further iteration
+    // above
+    return false;
+  } else {
+    // We don't have access to `replaceWithMultiple` as we need
+    // our own traversal so we replace the for with our own block
+    // of commands
+    return types.BlockStatement([
+      // Using `var` allows terser (maybe other minifiers too) to eliminate the block we just created
+      // if it is unnecessary. With `const` or `let`, the variable would be
+      // scoped to the block, so terser wouldn't be able to know if it's safe
+      // to eliminate the block or not
+      types.VariableDeclaration('var', [
+        types.VariableDeclarator(identifier, types.ArrayExpression())
+      ]),
+      node,
+      types.ReturnStatement(identifier)
+    ]);
   }
 }
 
