@@ -19,6 +19,9 @@ module.exports = function({ types }, { topLevel }) {
         if (path.node.key.name !== 'constructor') {
           maybeInjectReturn(path.node.body, { types, scope: path.scope });
         }
+      },
+      ObjectMethod(path) {
+        maybeInjectReturn(path.node.body, { types, scope: path.scope });
       }
     }
   };
