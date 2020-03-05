@@ -37,7 +37,9 @@ module.exports = {
         // of unreachable `break` to other tools
         "no-unreachable": 0,
         // And we need to handle fallthrough gracefully
-        "no-fallthrough": 0
+        "no-fallthrough": 0,
+        // Returns will be injected by the plugin so getters can avoid returning
+        "getter-return": 0
       }
     }
   ]

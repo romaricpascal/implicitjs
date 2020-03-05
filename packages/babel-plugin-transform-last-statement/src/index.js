@@ -12,6 +12,13 @@ module.exports = function({ types }, { topLevel }) {
       // Arrow (`() => {}`) functions
       ArrowFunctionExpression(path) {
         maybeInjectReturn(path.node.body, { types, scope: path.scope });
+      },
+      ClassMethod(path) {
+        // Ignore constructors as there's no point injecting anything there
+        // given their return value isn't actually returned to caller
+        if (path.node.key.name !== 'constructor') {
+          maybeInjectReturn(path.node.body, { types, scope: path.scope });
+        }
       }
     }
   };
@@ -24,6 +31,9 @@ module.exports = function({ types }, { topLevel }) {
 };
 
 function maybeInjectReturn(node, { key, ...options } = {}) {
+  // Uncomment to log the traversal
+  // console.log(nodeDebugName(node));
+
   // By default we want replacements to happen
   // unless a SwitchCase turns that off
   if (typeof options.replace === 'undefined') {
@@ -169,6 +179,17 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     case 'ForInStatement':
     case 'ForOfStatement': {
       return wrapLoopNode(node, options);
+    }
+    // Class declarations need to be turned into ClassExpressions
+    // That can be returned as a regular expression
+    case 'ClassDeclaration': {
+      node.type = 'ClassExpression';
+      // We still need to handle it like a regular expression
+      // at that point, so let's go for another round
+      return maybeInjectReturn(
+        options.types.ExpressionStatement(node),
+        options
+      );
     }
   }
 }

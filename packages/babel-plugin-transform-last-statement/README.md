@@ -64,10 +64,13 @@ TODO
   - [x] Declarations
     - [x] Variable declaration (Doesn't make sense to declare a variable to be returned as last statement, might as well write the return directly)
     - [x] Function declaration (Use explicit return for functions, as they might be last to make the code more readable, taking advantage of hoisting)
+    - [x] Class declaration
 - [x] Nesting - Handle the 3 places to return from
   - [x] Top level program
   - [x] Functions
   - [x] Arrow functions
+  - [x] Class methods
+  - [ ] Object methods
   - [x] Option for enabling the top level return
 - [x] Maintain comments
 - [ ] Sourcemaps
