@@ -102,10 +102,7 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
         } else {
           statement = types.ReturnStatement(node.expression);
         }
-        statement.leadingComments = node.leadingComments;
-        statement.trailingComments = node.trailingComments;
-        node.leadingComments = null;
-        node.trailingComments = null;
+        moveComments(node, statement);
         return statement;
       }
       return;
@@ -189,12 +186,18 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
       node.type = 'ClassExpression';
       // We still need to handle it like a regular expression
       // at that point, so let's go for another round
-      return maybeInjectReturn(
-        options.types.ExpressionStatement(node),
-        options
-      );
+      const expressionStatement = options.types.ExpressionStatement(node);
+      moveComments(node, expressionStatement);
+      return maybeInjectReturn(expressionStatement, options);
     }
   }
+}
+
+function moveComments(fromNode, toNode) {
+  toNode.leadingComments = fromNode.leadingComments;
+  toNode.trailingComments = fromNode.trailingComments;
+  fromNode.leadingComments = null;
+  fromNode.trailingComments = null;
 }
 
 function wrapLoopNode(node, options) {
