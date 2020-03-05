@@ -23,11 +23,19 @@ const macro = fileBasedTest(__filename, (t, { fixtureName, input }) => {
 // Use some globbing to generate tests based on the files in __fixtures__
 const fixtures = glob(resolve(fixturesPath(__filename), '**', '*.input.js'));
 
+// A regexp for filtering tests by fixtureName
+const filterByFixtureName = null;
+
 fixtures
   .map(path => relative(fixturesPath(__filename), path))
   .map(dropAllExtensions)
   .forEach(fixtureName => {
-    test(macro, { fixtureName });
+    if (filterByFixtureName) {
+      if (filterByFixtureName.text(fixtureName)) {
+        return test.only(macro, { fixtureName });
+      }
+    }
+    return test(macro, { fixtureName });
   });
 
 function fileBasedTest(testFileName, fn) {
@@ -60,13 +68,18 @@ function withOutputComparison(fn) {
     let compared;
     const compare = output => {
       if (!compared) {
+        const expected = readFileSync(
+          resolve(options.fixturesPath, `${options.fixtureName}.output.js`),
+          'utf-8'
+        );
+
         compared = true;
         return t.is(
+          // Ignore whitespace
           output.replace(/\s/g, ''),
-          readFileSync(
-            resolve(options.fixturesPath, `${options.fixtureName}.output.js`),
-            'utf-8'
-          ).replace(/\s/g, '')
+          expected
+            .replace(/\/\/\s*prettier-ignore/, '') // Ignore prettier comments
+            .replace(/\s/g, '') // Ignore whitespace
         );
       }
     };
