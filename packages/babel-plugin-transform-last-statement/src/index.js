@@ -188,9 +188,7 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     // and so do labeledstatements `label: const a = 5;`
     case 'LabeledStatement':
     case 'WithStatement': {
-      maybeInjectReturn(node, { key: 'body', ...options });
-      // TODO: Handle labelled   function declarations
-      return false;
+      return maybeInjectReturn(node, { key: 'body', ...options });
     }
     // We only want to mess with the `try` block
     // `catch` might yield unexpected values being returned

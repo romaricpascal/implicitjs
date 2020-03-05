@@ -567,7 +567,8 @@ and so do labeledstatements <code>label: const a = 5;</code></p>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">case</span> <span class="hljs-string">'LabeledStatement'</span>:
     <span class="hljs-keyword">case</span> <span class="hljs-string">'WithStatement'</span>: {
-      maybeInjectReturn(node, { <span class="hljs-attr">key</span>: <span class="hljs-string">'body'</span>, ...options });</pre></div></div>
+      <span class="hljs-keyword">return</span> maybeInjectReturn(node, { <span class="hljs-attr">key</span>: <span class="hljs-string">'body'</span>, ...options });
+    }</pre></div></div>
             
         </li>
         
@@ -577,22 +578,6 @@ and so do labeledstatements <code>label: const a = 5;</code></p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-30">&#182;</a>
-              </div>
-              <p>TODO: Handle labelled   function declarations</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
-    }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-31">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <p>We only want to mess with the <code>try</code> block
 <code>catch</code> might yield unexpected values being returned
@@ -611,11 +596,11 @@ so a definite no go:
         </li>
         
         
-        <li id="section-32">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <p>Blocks will have multiple statements in their body,
 we’ll need to traverse them last to first</p>
@@ -633,11 +618,11 @@ we’ll need to traverse them last to first</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <p><code>switch</code> statements need their own processing</p>
 <ul>
@@ -666,11 +651,11 @@ there are some valid use cases, so we need to handle it</li>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <p>Loops need their own processing too. We need to aggregate their data
 in an array and then return that array</p>
@@ -688,11 +673,11 @@ in an array and then return that array</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <p>Class declarations need to be turned into ClassExpressions
 That can be returned as a regular expression</p>
@@ -705,11 +690,11 @@ That can be returned as a regular expression</p>
         </li>
         
         
-        <li id="section-36">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p>We still need to handle it like a regular expression
 at that point, so let’s go for another round</p>
@@ -726,11 +711,11 @@ at that point, so let’s go for another round</p>
         </li>
         
         
-        <li id="section-37">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-37">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <h2 id="supporting-functions">Supporting functions</h2>
 
@@ -750,11 +735,11 @@ at that point, so let’s go for another round</p>
         </li>
         
         
-        <li id="section-38">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-38">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <p>We need to add a variable declaration before loops,
 and then return that variable. Quite a block to have
@@ -775,11 +760,11 @@ in the main traversal, so it’s in its own function instead.</p>
         </li>
         
         
-        <li id="section-39">
+        <li id="section-38">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-39">&#182;</a>
+                <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
               <p>A parent loop might have already created a variable
 to push into, so we only create on if needed</p>
@@ -792,11 +777,11 @@ to push into, so we only create on if needed</p>
         </li>
         
         
-        <li id="section-40">
+        <li id="section-39">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-40">&#182;</a>
+                <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
               <p>Then we can process the content of the loop</p>
 
@@ -811,11 +796,11 @@ to push into, so we only create on if needed</p>
         </li>
         
         
-        <li id="section-41">
+        <li id="section-40">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-41">&#182;</a>
+                <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
               <p>And finally wrap it only if we created the identifiers beforehand</p>
 
@@ -826,11 +811,11 @@ to push into, so we only create on if needed</p>
         </li>
         
         
-        <li id="section-42">
+        <li id="section-41">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-42">&#182;</a>
+                <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
               <p>Just like the other blocks, we consider that either
 we’ll have added a return, or there was one (or a <code>continue</code>) already
@@ -844,11 +829,11 @@ so we stop traversing siblings</p>
         </li>
         
         
-        <li id="section-43">
+        <li id="section-42">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-43">&#182;</a>
+                <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
               <p>We don’t have access to <code>replaceWithMultiple</code> as we need
 our own traversal so we replace the for with our own block
@@ -861,11 +846,11 @@ of commands</p>
         </li>
         
         
-        <li id="section-44">
+        <li id="section-43">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-44">&#182;</a>
+                <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
               <p>Using <code>var</code> allows terser (maybe other minifiers too) to eliminate the block we just created
 if it is unnecessary. With <code>const</code> or <code>let</code>, the variable would be
@@ -886,11 +871,11 @@ to eliminate the block or not</p>
         </li>
         
         
-        <li id="section-45">
+        <li id="section-44">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-45">&#182;</a>
+                <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
               <p>Little utility for outputing the name of a node
 cleanly (that is without dumping a whole object

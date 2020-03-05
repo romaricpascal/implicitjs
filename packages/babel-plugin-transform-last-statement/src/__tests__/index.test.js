@@ -14,8 +14,11 @@ const macro = fileBasedTest(__filename, (t, { fixtureName, input }) => {
     comments: /^comments/.test(fixtureName),
     parserOpts: {
       allowReturnOutsideFunction: true,
-      // For testing `with` blocks
-      strictMode: !/^with/.test(fixtureName)
+      // Strict mode needs to be turned of for `with` blocks
+      // or some exotic syntax
+      strictMode: !(
+        /^with/.test(fixtureName) || /labelled-functions/.test(fixtureName)
+      )
     }
   }).code;
 });
