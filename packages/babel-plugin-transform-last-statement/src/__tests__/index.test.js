@@ -31,7 +31,7 @@ fixtures
   .map(dropAllExtensions)
   .forEach(fixtureName => {
     if (filterByFixtureName) {
-      if (filterByFixtureName.text(fixtureName)) {
+      if (filterByFixtureName.test(fixtureName)) {
         return test.only(macro, { fixtureName });
       }
     }
