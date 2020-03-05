@@ -134,7 +134,7 @@ I'm happy to consider [issues][github-issues] or [pull requests][github-pr]. How
   - [Babel AST specifications][babel-ast]: List of the nodes that can be part of the AST created by Babel
   - [Babel handbook][babel-handbook]: The guide for creating Babel plugins
 
-[annotated-source]: docs/index.html#traversal-of-individual-statements
+[annotated-source]: https://rhumaric.github.io/babel-plugin-transform-last-statement/#traversal-of-individual-statements
 [writable-stream]: https://nodejs.org/api/stream.html#stream_class_stream_writable
 [babel-configuration]: https://babeljs.io/docs/en/config-
 [process-template-literals]: https://github.com/rhumaric/process-template-literals
