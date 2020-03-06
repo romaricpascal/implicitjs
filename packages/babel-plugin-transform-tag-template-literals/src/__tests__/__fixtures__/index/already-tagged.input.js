@@ -1,0 +1,1 @@
+customTag`a template ${literal}`;

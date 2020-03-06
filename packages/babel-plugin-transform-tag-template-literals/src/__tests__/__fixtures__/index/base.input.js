@@ -1,0 +1,3 @@
+`
+  a template ${literal}
+`;
