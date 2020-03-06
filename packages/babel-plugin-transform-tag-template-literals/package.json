@@ -1,5 +1,5 @@
 {
-  "name": "project-template-node",
+  "name": "babel-plugin-transform-tag-template-literals",
   "version": "0.1.0",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhumaric/project-template-node.git"
+    "url": "git+https://github.com/rhumaric/babel-plugin-transform-tag-template-literals.git"
   },
   "author": "Romaric Pascal <hello@romaricpascal.is>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rhumaric/project-template-node/issues"
+    "url": "https://github.com/rhumaric/babel-plugin-transform-tag-template-literals/issues"
   },
-  "homepage": "https://github.com/rhumaric/project-template-node#readme",
+  "homepage": "https://github.com/rhumaric/babel-plugin-transform-tag-template-literals#readme",
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@commitlint/cli": "^8.3.5",
