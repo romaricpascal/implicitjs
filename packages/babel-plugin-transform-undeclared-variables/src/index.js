@@ -19,7 +19,8 @@ module.exports = function(
           // The part after the dot when accessing the property of an object
           // (for ex, `property` in `obj.property` is also an identifier,
           // so we need to ignore those
-          !isMemberExpressionProperty(path)
+          !isMemberExpressionProperty(path) &&
+          !isLeftHandSideOfAssignment(path)
         ) {
           if (variables[path.node.name]) {
             this.transforms.push(variables[path.node.name](path, babel));
@@ -34,6 +35,13 @@ module.exports = function(
     }
   };
 };
+
+function isLeftHandSideOfAssignment(path) {
+  const parentAssignment = path.findParent(
+    p => p.type === 'AssignmentExpression'
+  );
+  return parentAssignment && parentAssignment.node.left == path.node;
+}
 
 function isMemberExpressionProperty(path) {
   return (
