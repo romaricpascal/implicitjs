@@ -1,15 +1,15 @@
 const test = require('ava');
 const testname = require('testname');
 const { transformSync } = require('@babel/core');
-const { readFileSync } = require('fs');
+const { readFileSync, existsSync } = require('fs');
 const { resolve, dirname, relative } = require('path');
 const { sync: glob } = require('fast-glob');
 const transform = require('..');
 
-const macro = fileBasedTest(__filename, (t, { input }) => {
+const macro = fileBasedTest(__filename, (t, { input, options = {} }) => {
   return transformSync(input, {
     // Control whether to allow top-level through filename
-    plugins: [[transform]]
+    plugins: [[transform, options]]
   }).code;
 });
 
@@ -32,7 +32,10 @@ fixtures
   });
 
 function fileBasedTest(testFileName, fn) {
-  const macro = withFixtures(testFileName, withInput(withOutputComparison(fn)));
+  const macro = withFixtures(
+    testFileName,
+    withInput(withOptions(withOutputComparison(fn)))
+  );
   macro.title = (definedTitle, options) => definedTitle || options.fixtureName;
   return macro;
 }
@@ -43,6 +46,20 @@ function withFixtures(testFileName, fn) {
       fixturesPath: fixturesPath(testFileName),
       ...options
     });
+  };
+}
+
+function withOptions(fn) {
+  return function(t, options) {
+    const optionsPath = resolve(
+      options.fixturesPath,
+      `${options.fixtureName}.options.js`
+    );
+    if (existsSync(optionsPath)) {
+      const testOptions = require(optionsPath);
+      return fn(t, { options: testOptions, ...options });
+    }
+    return fn(t, options);
   };
 }
 

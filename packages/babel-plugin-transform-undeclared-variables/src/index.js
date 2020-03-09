@@ -1,6 +1,12 @@
 // Code goes here
-module.exports = function({ types }) {
+module.exports = function({ types }, { defaultTransform = getter() } = {}) {
   return {
+    pre() {
+      // Babel will re-traverse replaced Identifiers,
+      // so we'll bundle the replacements all in one go
+      // after the traversal
+      this.transforms = [];
+    },
     visitor: {
       Identifier(path) {
         if (
@@ -12,11 +18,12 @@ module.exports = function({ types }) {
           // so we need to ignore those
           !isMemberExpressionProperty(path)
         ) {
-          path.replaceWith(
-            types.MemberExpression(types.identifier('data'), path.node)
-          );
+          this.transforms.push(defaultTransform(path, { types }));
         }
       }
+    },
+    post() {
+      this.transforms.forEach(transform => transform());
     }
   };
 };
@@ -27,3 +34,35 @@ function isMemberExpressionProperty(path) {
     path.parent.property === path.node
   );
 }
+
+function getter(objectName = 'data') {
+  return function(path, { types }) {
+    return function() {
+      path.replaceWith(
+        types.MemberExpression(
+          memberExpressionObject(objectName, { types }),
+          path.node
+        )
+      );
+    };
+  };
+}
+
+// Generate the propert AST for objectNames that have dots
+// in them (ie. Nested MemberExpressions)
+/* 
+  From developit/htm
+  https://github.com/developit/htm/blob/86a723685da4f339397ced396a36c08a73ea6b68/packages/babel-plugin-transform-jsx-to-htm/index.mjs#L37
+  License: Apache License 2.0 https://github.com/developit/htm/blob/master/LICENSE
+*/
+function memberExpressionObject(keypath, { types }) {
+  const path = keypath.split('.');
+  let out;
+  for (let i = 0; i < path.length; i++) {
+    const ident = types.identifier(path[i]);
+    out = i === 0 ? ident : types.memberExpression(out, ident);
+  }
+  return out;
+}
+
+module.exports.getter = getter;
