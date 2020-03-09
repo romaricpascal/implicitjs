@@ -1,4 +1,4 @@
-const { getter } = require('../../..');
+const { getter } = require('../../../..');
 module.exports = {
   defaultTransform: getter('obj.property')
 };

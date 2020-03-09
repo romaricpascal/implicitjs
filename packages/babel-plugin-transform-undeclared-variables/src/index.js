@@ -1,5 +1,8 @@
 // Code goes here
-module.exports = function({ types }, { defaultTransform = getter() } = {}) {
+module.exports = function(
+  babel,
+  { defaultTransform = getter(), variables = {} } = {}
+) {
   return {
     pre() {
       // Babel will re-traverse replaced Identifiers,
@@ -18,7 +21,11 @@ module.exports = function({ types }, { defaultTransform = getter() } = {}) {
           // so we need to ignore those
           !isMemberExpressionProperty(path)
         ) {
-          this.transforms.push(defaultTransform(path, { types }));
+          if (variables[path.node.name]) {
+            this.transforms.push(variables[path.node.name](path, babel));
+          } else {
+            this.transforms.push(defaultTransform(path, babel));
+          }
         }
       }
     },
