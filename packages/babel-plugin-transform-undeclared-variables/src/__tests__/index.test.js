@@ -9,7 +9,10 @@ const transform = require('..');
 const macro = fileBasedTest(__filename, (t, { input, options = {} }) => {
   return transformSync(input, {
     // Control whether to allow top-level through filename
-    plugins: [[transform, options]]
+    plugins: [[transform, options]],
+    parserOpts: {
+      sourceType: 'module'
+    }
   }).code;
 });
 

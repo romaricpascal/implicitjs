@@ -11,6 +11,9 @@ module.exports = function(
       this.transforms = [];
     },
     visitor: {
+      Program(path) {
+        this.programPath = path;
+      },
       Identifier(path) {
         if (
           // Babel handily tracks whether the name of an identifier
@@ -31,7 +34,7 @@ module.exports = function(
       }
     },
     post() {
-      this.transforms.forEach(transform => transform());
+      this.transforms.forEach(transform => transform(this.programPath));
     }
   };
 };
@@ -81,3 +84,36 @@ function memberExpressionObject(keypath, { types }) {
 }
 
 module.exports.getter = getter;
+
+function addImport(packageName, { namedExport } = {}) {
+  return function(path, babel) {
+    return function(programPath) {
+      programPath.node.body.unshift(
+        importAST(path.node.name, { packageName, namedExport }, babel)
+      );
+    };
+  };
+}
+
+function importAST(identifierName, { packageName, namedExport }, { types }) {
+  if (namedExport) {
+    const exportedName =
+      typeof namedExport == 'string' ? namedExport : identifierName;
+    return types.ImportDeclaration(
+      [
+        types.ImportSpecifier(
+          types.Identifier(identifierName),
+          types.Identifier(exportedName)
+        )
+      ],
+      types.StringLiteral(packageName)
+    );
+  } else {
+    return types.ImportDeclaration(
+      [types.ImportDefaultSpecifier(types.Identifier(identifierName))],
+      types.StringLiteral(packageName)
+    );
+  }
+}
+
+module.exports.addImport = addImport;
