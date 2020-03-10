@@ -26,15 +26,21 @@ module.exports = function(
           !isLeftHandSideOfAssignment(path)
         ) {
           if (variables[path.node.name]) {
-            this.transforms.push(variables[path.node.name](path, babel));
+            this.transforms.push(
+              variables[path.node.name].call(this, path, babel)
+            );
           } else {
-            this.transforms.push(defaultTransform(path, babel));
+            this.transforms.push(defaultTransform.call(this, path, babel));
           }
         }
       }
     },
     post() {
-      this.transforms.forEach(transform => transform(this.programPath));
+      this.transforms.forEach(transform => {
+        if (transform) {
+          transform(this.programPath);
+        }
+      });
     }
   };
 };
@@ -87,11 +93,21 @@ module.exports.getter = getter;
 
 function addImport(packageName, { namedExport } = {}) {
   return function(path, babel) {
-    return function(programPath) {
-      programPath.node.body.unshift(
-        importAST(path.node.name, { packageName, namedExport }, babel)
-      );
-    };
+    // For a given traversal, the same variable might appear many times
+    // but only one import should be injected for it
+    // So we need to keep track of those, using in a hash
+    if (!this.importedVariables) {
+      this.importedVariables = {};
+    }
+    const identifierName = path.node.name;
+    if (!this.importedVariables[identifierName]) {
+      this.importedVariables[identifierName] = true;
+      return function(programPath) {
+        programPath.node.body.unshift(
+          importAST(path.node.name, { packageName, namedExport }, babel)
+        );
+      };
+    }
   };
 }
 
