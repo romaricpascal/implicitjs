@@ -49,7 +49,10 @@
   "dependencies": {
     "@babel/core": "^7.8.7",
     "babel-plugin-transform-last-statement": "^0.1.1",
-    "babel-plugin-transform-undeclared-variables": "^0.1.0"
+    "babel-plugin-transform-tag-template-literals": "^0.1.1",
+    "babel-plugin-transform-undeclared-variables": "^0.1.0",
+    "omniformat": "^1.0.0",
+    "process-template-literals": "^0.1.0"
   },
   "ava": {
     "files": [

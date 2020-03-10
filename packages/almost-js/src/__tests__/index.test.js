@@ -95,7 +95,7 @@ function withOutputComparison(fn) {
     };
     const result = fn(t, { compare, ...options });
     if (result.then) {
-      return result.then(compare);
+      return result.then(compare).catch(e => console.log(e, result));
     } else {
       return compare(result);
     }
