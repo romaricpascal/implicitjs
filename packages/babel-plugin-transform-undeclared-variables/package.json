@@ -1,7 +1,7 @@
 {
-  "name": "project-template-node",
+  "name": "babel-plugin-transform-undeclared-variables",
   "version": "0.0.1",
-  "description": "Template for NodeJS projects",
+  "description": "Transforms undeclared variables into imports or getter calls",
   "main": "src/index.js",
   "engines": {
     "node": ">=8.12.0"
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhumaric/project-template-node.git"
+    "url": "git+https://github.com/rhumaric/babel-plugin-transform-undeclared-variables.git"
   },
   "author": "Romaric Pascal <hello@romaricpascal.is>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rhumaric/project-template-node/issues"
+    "url": "https://github.com/rhumaric/babel-plugin-transform-undeclared-variables/issues"
   },
-  "homepage": "https://github.com/rhumaric/project-template-node#readme",
+  "homepage": "https://github.com/rhumaric/babel-plugin-transform-undeclared-variables#readme",
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@commitlint/cli": "^8.3.5",
