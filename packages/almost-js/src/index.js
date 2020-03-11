@@ -144,3 +144,10 @@ function createTemplateRequire(filePath, options) {
     }
   };
 }
+
+// Express binding
+module.exports.__express = function(filePath, data, callback) {
+  return renderFile(filePath, data)
+    .then(rendered => callback(null, rendered))
+    .catch(error => callback(error));
+};

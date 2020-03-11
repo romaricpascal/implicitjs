@@ -66,7 +66,7 @@ TODO
 - [x] Caching
 - [x] Require other templates
 - [ ] Globals (`console`,...)
-- [ ] Express template engine
+- [x] Express template engine
 - [ ] Webpack loader
 - [ ] transform for NodeJS `require`
 - [ ] JSX support (compile it to template literals, maybe using this [jsx-to-htm transform](https://github.com/developit/htm/tree/master/packages/babel-plugin-transform-jsx-to-htm))
