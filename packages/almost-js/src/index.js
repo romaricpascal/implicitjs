@@ -7,6 +7,8 @@ const omniformat = require('omniformat');
 const { readFileSync } = require('fs');
 const { createRequire } = require('module');
 
+const DEFAULT_EXTENSION = 'ajs';
+
 // WeakMap don't accept string keys :(
 // so resolving to use a Map instead
 const cache = new Map();
@@ -95,7 +97,13 @@ const cachedCompileFile = withCache(function compileFile(filePath, options) {
     options
   });
   return async function(data) {
-    return template({ require: createRequire(filePath), ...data });
+    return template({
+      require: createTemplateRequire(filePath, {
+        extension: DEFAULT_EXTENSION,
+        ...options
+      }),
+      ...data
+    });
   };
 });
 
@@ -119,3 +127,20 @@ async function renderFile(filePath, data, options) {
 }
 
 module.exports.renderFile = renderFile;
+
+function createTemplateRequire(filePath, options) {
+  const require = createRequire(filePath);
+  const extensionRegexp = new RegExp(`\\.${options.extension}`);
+  return function(moduleName) {
+    // Try and resolve as a template first
+    try {
+      const hasTemplateExtension = extensionRegexp.test(moduleName);
+      const resolved = require.resolve(
+        hasTemplateExtension ? moduleName : `${moduleName}.${options.extension}`
+      );
+      return compileFile(resolved, options);
+    } catch (e) {
+      return require(moduleName);
+    }
+  };
+}

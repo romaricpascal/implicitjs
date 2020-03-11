@@ -18,7 +18,9 @@ module.exports = {
     },{
       "files": [
         "**/__tests__/**/*.input.js",
-        "**/__tests__/**/*.output.js"
+        "**/__tests__/**/*.output.js",
+        "**/__tests__/**/*.component.js",
+        "**/__tests__/**/*.ajs"
       ],
       rules: {
         // We don't really care about whether vars are used
