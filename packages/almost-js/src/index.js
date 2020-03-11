@@ -4,6 +4,8 @@ const transformLastStatement = require('babel-plugin-transform-last-statement');
 const tagTemplateLiterals = require('babel-plugin-transform-tag-template-literals');
 const createTemplateTag = require('process-template-literals');
 const omniformat = require('omniformat');
+const { readFileSync } = require('fs');
+const { createRequire } = require('module');
 
 /**
  * Compiles the given `templateString` into a template
@@ -15,12 +17,13 @@ const omniformat = require('omniformat');
  * @param {Function} [tag] - The tag used tagging the template literals
  * @return {Function} The compiled template, ready to accept a `data` object to render into String
  */
-module.exports = function compile(
+function compile(
   templateString,
   {
     tagName = 'html',
     formatter = omniformat,
-    tag = createProcessorTag(formatter)
+    tag = createProcessorTag(formatter),
+    globals = {}
   } = {}
 ) {
   const { code } = transformSync(templateString, {
@@ -34,9 +37,9 @@ module.exports = function compile(
   return async function(data = {}) {
     // The template might return an array, or anything, actually
     // so we need to format it again
-    return formatter(templateFunction({ [tagName]: tag, ...data }));
+    return formatter(templateFunction({ [tagName]: tag, ...globals, ...data }));
   };
-};
+}
 
 function createProcessorTag(formatter) {
   return createTemplateTag(({ strings, expressions }) => {
@@ -54,3 +57,21 @@ function createProcessorTag(formatter) {
     return { strings, expressions: processedExpressions };
   });
 }
+
+module.exports.compile = compile;
+
+/**
+ * Compiles the file at the given path
+ * @param {String} filePath
+ * @param {Object} options
+ */
+function compileFile(filePath, { globals = {}, ...options } = {}) {
+  const contents = readFileSync(filePath);
+  return compile(contents, {
+    // The `require` calls need to be resolved from the template
+    // itself, so we need to pass a new `require` function
+    globals: { require: createRequire(filePath), ...globals },
+    ...options
+  });
+}
+module.exports.compileFile = compileFile;

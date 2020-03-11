@@ -3,7 +3,7 @@ const testname = require('testname');
 const { readFileSync, existsSync } = require('fs');
 const { resolve, dirname, relative } = require('path');
 const { sync: glob } = require('fast-glob');
-const compile = require('..');
+const { compile } = require('..');
 
 const macro = fileBasedTest(__filename, (t, { input, data, options = {} }) => {
   const template = compile(input, options);
