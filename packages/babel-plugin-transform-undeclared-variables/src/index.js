@@ -62,12 +62,16 @@ function isMemberExpressionProperty(path) {
 function getter(objectName = 'data') {
   return function(path, { types }) {
     return function() {
-      path.replaceWith(
-        types.MemberExpression(
-          memberExpressionObject(objectName, { types }),
-          path.node
-        )
+      const memberExpression = types.MemberExpression(
+        memberExpressionObject(objectName, { types }),
+        path.node
       );
+      if (path.parent.type === 'ObjectProperty') {
+        path.parent.shorthand = false;
+        path.parent.value = memberExpression;
+      } else {
+        path.replaceWith(memberExpression);
+      }
     };
   };
 }
