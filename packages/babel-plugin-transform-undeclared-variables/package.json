@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-undeclared-variables",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Transforms undeclared variables into imports or getter calls",
   "main": "src/index.js",
   "engines": {
