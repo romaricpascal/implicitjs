@@ -58,13 +58,14 @@ TODO
 - [x] Configuration options
   - [x] Override formatting of template expressions
   - [x] Override function used for tagging literals
-- [ ] General API
+- [x] General API
   - [x] `compile`
   - [x] `compileFile`
-  - [ ] `render`
-  - [ ] `renderFile`
+  - [x] `render`
+  - [x] `renderFile`
+- [x] Caching
+- [ ] Globals (`console`,...)
 - [ ] Express template engine
-  - [ ] Conservation of globals (`console`, `require`...)
 - [ ] Webpack loader
 - [ ] transform for NodeJS `require`
 - [ ] JSX support (compile it to template literals, maybe using this [jsx-to-htm transform](https://github.com/developit/htm/tree/master/packages/babel-plugin-transform-jsx-to-htm))

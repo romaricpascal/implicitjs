@@ -7,6 +7,30 @@ const omniformat = require('omniformat');
 const { readFileSync } = require('fs');
 const { createRequire } = require('module');
 
+// WeakMap don't accept string keys :(
+// so resolving to use a Map instead
+const cache = new Map();
+
+/**
+ * Wraps a call
+ * @param {} callback
+ */
+function withCache(callback) {
+  return function(templateOrPath, { cacheKey = false, ...options } = {}) {
+    if (cacheKey) {
+      if (cache.has(cacheKey)) {
+        return cache.get(cacheKey);
+      } else {
+        const result = callback(templateOrPath, options);
+        cache.set(cacheKey, result);
+        return result;
+      }
+    }
+
+    return callback(templateOrPath, options);
+  };
+}
+
 /**
  * Compiles the given `templateString` into a template
  *
@@ -15,18 +39,14 @@ const { createRequire } = require('module');
  * @param {String} [tagName='html'] - The variable name for tagging the template literals
  * @param {Function} [formatter='omniformat'] - The function used for formatting the expressions
  * @param {Function} [tag] - The tag used tagging the template literals
- * @param {Function} [globals={}] - A hash of properties that will be passed to the template.
- *                                  Specific properties can be overriden when the template
- *                                  is run by passing a property with the same name within `data`
  * @return {Function} The compiled template, ready to accept a `data` object to render into String
  */
-function compile(
+const compile = withCache(function(
   templateString,
   {
     tagName = 'html',
     formatter = omniformat,
-    tag = createProcessorTag(formatter),
-    globals = {}
+    tag = createProcessorTag(formatter)
   } = {}
 ) {
   const { code } = transformSync(templateString, {
@@ -40,9 +60,9 @@ function compile(
   return async function(data = {}) {
     // The template might return an array, or anything, actually
     // so we need to format it again
-    return formatter(templateFunction({ [tagName]: tag, ...globals, ...data }));
+    return formatter(templateFunction({ [tagName]: tag, ...data }));
   };
-}
+});
 
 function createProcessorTag(formatter) {
   return createTemplateTag(({ strings, expressions }) => {
@@ -68,15 +88,21 @@ module.exports.compile = compile;
  * @param {String} filePath
  * @param {Object} options - @see compile.params:options
  */
-function compileFile(filePath, { globals = {}, ...options } = {}) {
+
+const cachedCompileFile = withCache(function compileFile(filePath, options) {
   const contents = readFileSync(filePath);
-  return compile(contents, {
-    // The `require` calls need to be resolved from the template
-    // itself, so we need to pass a new `require` function
-    globals: { require: createRequire(filePath), ...globals },
-    ...options
+  const template = compile(contents, {
+    options
   });
-}
+  return async function(data) {
+    return template({ require: createRequire(filePath), ...data });
+  };
+});
+
+const compileFile = function(filePath, options) {
+  return cachedCompileFile(filePath, { cacheKey: filePath, ...options });
+};
+
 module.exports.compileFile = compileFile;
 
 /** */
