@@ -55,9 +55,14 @@ TODO
 ---
 
 - [x] Basic proof of concept
-- [ ] Configuration options
-  - [ ] Override formatting of template expressions
-  - [ ] Override function used for tagging literals
+- [x] Configuration options
+  - [x] Override formatting of template expressions
+  - [x] Override function used for tagging literals
+- [ ] General API
+  - [x] `compile`
+  - [x] `compileFile`
+  - [ ] `render`
+  - [ ] `renderFile`
 - [ ] Express template engine
   - [ ] Conservation of globals (`console`, `require`...)
 - [ ] Webpack loader

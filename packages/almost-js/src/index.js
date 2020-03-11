@@ -15,6 +15,9 @@ const { createRequire } = require('module');
  * @param {String} [tagName='html'] - The variable name for tagging the template literals
  * @param {Function} [formatter='omniformat'] - The function used for formatting the expressions
  * @param {Function} [tag] - The tag used tagging the template literals
+ * @param {Function} [globals={}] - A hash of properties that will be passed to the template.
+ *                                  Specific properties can be overriden when the template
+ *                                  is run by passing a property with the same name within `data`
  * @return {Function} The compiled template, ready to accept a `data` object to render into String
  */
 function compile(
@@ -63,7 +66,7 @@ module.exports.compile = compile;
 /**
  * Compiles the file at the given path
  * @param {String} filePath
- * @param {Object} options
+ * @param {Object} options - @see compile.params:options
  */
 function compileFile(filePath, { globals = {}, ...options } = {}) {
   const contents = readFileSync(filePath);
@@ -75,3 +78,18 @@ function compileFile(filePath, { globals = {}, ...options } = {}) {
   });
 }
 module.exports.compileFile = compileFile;
+
+/** */
+async function render(templateString, data, options) {
+  const template = compile(templateString, options);
+  return template(data);
+}
+
+module.exports.render = render;
+
+async function renderFile(filePath, data, options) {
+  const template = compileFile(filePath, options);
+  return template(data);
+}
+
+module.exports.renderFile = renderFile;
