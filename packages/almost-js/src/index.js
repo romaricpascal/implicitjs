@@ -5,25 +5,23 @@ const tagTemplateLiterals = require('babel-plugin-transform-tag-template-literal
 const createTemplateTag = require('process-template-literals');
 const omniformat = require('omniformat');
 
-// Create our tag to process each expression with our formatter
-const templateTag = createTemplateTag(({ strings, expressions }) => {
-  const processedExpressions = expressions.map(omniformat);
-  // Handle that some of the formatted values might have been promises
-  if (processedExpressions.some(v => v instanceof Promise)) {
-    return Promise.all(processedExpressions).then(
-      fullfilledProcessedExpressions => ({
-        strings,
-        expressions: fullfilledProcessedExpressions
-      })
-    );
-  }
-  // If none are Promises, we can keep things synchronous
-  return { strings, expressions: processedExpressions };
-});
-
-module.exports = function(
+/**
+ * Compiles the given `templateString` into a template
+ *
+ * @param {String} templateString - The string to compile
+ * @param {Object} options
+ * @param {String} [tagName='html'] - The variable name for tagging the template literals
+ * @param {Function} [formatter='omniformat'] - The function used for formatting the expressions
+ * @param {Function} [tag] - The tag used tagging the template literals
+ * @return {Function} The compiled template, ready to accept a `data` object to render into String
+ */
+module.exports = function compile(
   templateString,
-  { tagName = 'html', tag = templateTag } = {}
+  {
+    tagName = 'html',
+    formatter = omniformat,
+    tag = createProcessorTag(formatter)
+  } = {}
 ) {
   const { code } = transformSync(templateString, {
     plugins: [
@@ -36,6 +34,23 @@ module.exports = function(
   return async function(data = {}) {
     // The template might return an array, or anything, actually
     // so we need to format it again
-    return omniformat(templateFunction({ [tagName]: tag, ...data }));
+    return formatter(templateFunction({ [tagName]: tag, ...data }));
   };
 };
+
+function createProcessorTag(formatter) {
+  return createTemplateTag(({ strings, expressions }) => {
+    const processedExpressions = expressions.map(formatter);
+    // Handle that some of the formatted values might have been promises
+    if (processedExpressions.some(v => v instanceof Promise)) {
+      return Promise.all(processedExpressions).then(
+        fullfilledProcessedExpressions => ({
+          strings,
+          expressions: fullfilledProcessedExpressions
+        })
+      );
+    }
+    // If none are Promises, we can keep things synchronous
+    return { strings, expressions: processedExpressions };
+  });
+}

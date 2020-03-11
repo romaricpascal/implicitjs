@@ -55,11 +55,11 @@ TODO
 ---
 
 - [x] Basic proof of concept
-- [ ] Conservation of globals (`console`, `require`...)
 - [ ] Configuration options
   - [ ] Override formatting of template expressions
   - [ ] Override function used for tagging literals
 - [ ] Express template engine
+  - [ ] Conservation of globals (`console`, `require`...)
 - [ ] Webpack loader
 - [ ] transform for NodeJS `require`
 - [ ] JSX support (compile it to template literals, maybe using this [jsx-to-htm transform](https://github.com/developit/htm/tree/master/packages/babel-plugin-transform-jsx-to-htm))
