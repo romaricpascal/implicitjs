@@ -132,6 +132,11 @@ function maybeInjectReturn(node, { key, ...options } = {}) {
     case 'ExpressionStatement': {
       const { types, replace, resultsIdentifier } = options;
 
+      // Don't return assignment expressions
+      if (node.expression.type == 'AssignmentExpression') {
+        return false;
+      }
+
       // First we need to check if we're actually allowed
       // to replace, in case we're in a `switch`.
       // Note that the actuall expression to return is
