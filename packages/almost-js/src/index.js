@@ -6,6 +6,7 @@ const createTemplateTag = require('process-template-literals');
 const omniformat = require('omniformat');
 const { readFileSync } = require('fs');
 const { createRequire } = require('module');
+const nodeGlobals = require('./nodeGlobals');
 
 const DEFAULT_EXTENSION = 'ajs';
 
@@ -51,6 +52,8 @@ const compile = withCache(function(
     tag = createProcessorTag(formatter)
   } = {}
 ) {
+  // First we'll compile the body of the function
+  // with Babel
   const { code } = transformSync(templateString, {
     plugins: [
       [transformUndeclaredVariables],
@@ -58,12 +61,23 @@ const compile = withCache(function(
       [tagTemplateLiterals, { tagName }]
     ]
   });
+  // At that stage, we don't have a function yet
+  // just its body, so we need to create our own
   const templateFunction = new Function('data', code);
-  return async function(data = {}) {
+
+  // Last, we might need to inject some
+  const template = async function(data = {}) {
     // The template might return an array, or anything, actually
     // so we need to format it again
-    return formatter(templateFunction({ [tagName]: tag, ...data }));
+    return formatter(
+      // Creating a function with new Function doesn't let
+      // its code have access to globals like console,
+      // setTimeout... so we need to inject them ourself
+      templateFunction({ [tagName]: tag, ...nodeGlobals, ...data })
+    );
   };
+
+  return template;
 });
 
 function createProcessorTag(formatter) {

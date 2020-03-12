@@ -65,7 +65,7 @@ TODO
   - [x] `renderFile`
 - [x] Caching
 - [x] Require other templates
-- [ ] Globals (`console`,...)
+- [x] Globals (`console`,...)
 - [x] Express template engine
 - [ ] Webpack loader
 - [ ] transform for NodeJS `require`
