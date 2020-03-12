@@ -5,7 +5,7 @@ const tagTemplateLiterals = require('babel-plugin-transform-tag-template-literal
 const createTemplateTag = require('process-template-literals');
 const omniformat = require('omniformat');
 const { readFileSync } = require('fs');
-const { createRequire } = require('module');
+const { createRequire, createRequireFromPath } = require('module');
 const nodeGlobals = require('./nodeGlobals');
 
 const DEFAULT_EXTENSION = 'ajs';
@@ -142,8 +142,10 @@ async function renderFile(filePath, data, options) {
 
 module.exports.renderFile = renderFile;
 
+// Node 10 doesn't have `createRequire`, but `createRequireFromPath`
+const createNativeRequire = createRequire || createRequireFromPath;
 function createTemplateRequire(filePath, options) {
-  const require = createRequire(filePath);
+  const require = createNativeRequire(filePath);
   const extensionRegexp = new RegExp(`\\.${options.extension}`);
   return function(moduleName) {
     // Try and resolve as a template first
