@@ -27,6 +27,9 @@ module.exports = {
         // or existing in our examples
         "no-unused-vars": 0,
         "no-undef": 0,
+        // We don't really care if imported packages exist
+        // in the test fixtures
+        "node/no-missing-require": 0
       }
     }
   ]
