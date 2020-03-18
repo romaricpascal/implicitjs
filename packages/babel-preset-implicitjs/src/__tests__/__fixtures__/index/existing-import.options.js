@@ -1,3 +1,4 @@
 module.exports = {
-  formatterModule: './formatter'
+  formatterModule: './formatter',
+  tagModule: './tag'
 };

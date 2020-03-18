@@ -53,7 +53,6 @@ function hoistImportsTo(path) {
   const imports = [];
   path.traverse({
     ImportDeclaration(path) {
-      console.log('Imports found');
       imports.push(path);
     }
   });
