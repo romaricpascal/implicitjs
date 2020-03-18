@@ -23,7 +23,7 @@ const htmlAttributes = Object.entries(attributes).map(([name,value] => `name=${e
 
 // Use regular template literals to generate the resulting HTML
 `<article ${htmlAttributes}>
-  `<h1>${post.title}</h1>`
+  <h1>${post.title}</h1>
   ${() => {
     // Function expressions are automatically evaluated
     // Allowing to use plain Javascript `if`
@@ -54,27 +54,5 @@ function tagList(post) {
 TODO
 ---
 
-- [x] Basic proof of concept
-- [x] Configuration options
-  - [x] Override formatting of template expressions
-  - [x] Override function used for tagging literals
-- [x] General API
-  - [x] `compile`
-  - [x] `compileFile`
-  - [x] `render`
-  - [x] `renderFile`
-- [x] Caching
-- [x] Require other templates
-- [x] Globals (`console`,...)
-- [x] Express template engine
-- [ ] Webpack loader
-- [ ] transform for NodeJS `require`
-- [ ] JSX support (compile it to template literals, maybe using this [jsx-to-htm transform](https://github.com/developit/htm/tree/master/packages/babel-plugin-transform-jsx-to-htm))
-- [ ] Custom parser to parse statements inside template literal expressions as IIFEs or arrow functions, saving a little more boilerplate, allowing:
-  ```js
-  `<ul>
-    ${for(var i = 0; i < 5; i++) {
-      `Value: ${i}`
-    }}
-  </ul>`
-  ```
+- [ ] Add option for customizing Babel configuration
+- [ ] Maybe rename the express template engine to `expressTemplateEngine` rather than the more obscure `__express`
