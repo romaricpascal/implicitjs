@@ -1,4 +1,7 @@
 const wrapInExport = require('./lib/wrapInExport');
+const tagTemplateLiterals = require('babel-plugin-transform-tag-template-literals');
+const transformLastStatement = require('babel-plugin-transform-last-statement');
+const transformUndeclaredVariables = require('babel-plugin-transform-undeclared-variables');
 const { addImport } = require('babel-plugin-transform-undeclared-variables');
 
 module.exports = function(
@@ -8,8 +11,8 @@ module.exports = function(
   // Whatever the options we want to at least tag template literals
   // And return the last statements
   const plugins = [
-    ['transform-tag-template-literals', { tagName }],
-    ['transform-last-statement', { topLevel: true }]
+    [tagTemplateLiterals, { tagName }],
+    [transformLastStatement, { topLevel: true }]
   ];
 
   // Then we also need to transform undeclared variables
@@ -20,7 +23,7 @@ module.exports = function(
       [tagName]: addImport(tagModule)
     };
   }
-  plugins.push(['transform-undeclared-variables', undeclaredVariablesOptions]);
+  plugins.push([transformUndeclaredVariables, undeclaredVariablesOptions]);
   // Last we need to check whether to wrap the module
   // in export or not
   if (type == 'module') {
