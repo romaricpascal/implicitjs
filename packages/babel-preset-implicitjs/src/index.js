@@ -14,22 +14,13 @@ module.exports = function(
 
   // Then we also need to transform undeclared variables
   // but what we do vary if we're a 'module' or not
-  if (type == 'module') {
-    // In a module, the `tag` needs to be imported
-    plugins.push([
-      'transform-undeclared-variables',
-      {
-        variables: {
-          [tagName]: addImport(tagModule)
-        }
-      }
-    ]);
-  } else {
-    // Not in a module, it'll be expected to be passed
-    // with the other `data` sent to the template
-    plugins.push['transform-undeclared-variables'];
+  const undeclaredVariablesOptions = {};
+  if (type === 'module' && tagModule) {
+    undeclaredVariablesOptions.variables = {
+      [tagName]: addImport(tagModule)
+    };
   }
-
+  plugins.push(['transform-undeclared-variables', undeclaredVariablesOptions]);
   // Last we need to check whether to wrap the module
   // in export or not
   if (type == 'module') {
