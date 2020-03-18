@@ -1,7 +1,4 @@
 const { transformSync } = require('@babel/core');
-const transformUndeclaredVariables = require('babel-plugin-transform-undeclared-variables');
-const transformLastStatement = require('babel-plugin-transform-last-statement');
-const tagTemplateLiterals = require('babel-plugin-transform-tag-template-literals');
 const createTemplateTag = require('process-template-literals');
 const omniformat = require('omniformat');
 const { readFileSync } = require('fs');
@@ -55,11 +52,7 @@ const compile = withCache(function(
   // First we'll compile the body of the function
   // with Babel
   const { code } = transformSync(templateString, {
-    plugins: [
-      [transformUndeclaredVariables],
-      [transformLastStatement, { topLevel: true }],
-      [tagTemplateLiterals, { tagName }]
-    ]
+    presets: [['implicitjs', { tagName, type: 'body' }]]
   });
   // At that stage, we don't have a function yet
   // just its body, so we need to create our own
