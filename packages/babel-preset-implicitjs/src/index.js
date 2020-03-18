@@ -2,7 +2,6 @@ const wrapInExport = require('./lib/wrapInExport');
 const { addImport } = require('babel-plugin-transform-undeclared-variables');
 
 module.exports = function(babel, { tagName = 'tag', formatterModule } = {}) {
-  console.log(arguments[1]);
   return {
     plugins: [
       ['transform-tag-template-literals', { tagName }],

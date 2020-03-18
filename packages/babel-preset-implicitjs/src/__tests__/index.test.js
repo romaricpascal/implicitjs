@@ -10,7 +10,6 @@ const preset = require('..');
 const fixtures = glob(resolve(fixturesPath(__filename), '**', '*.input.js'));
 
 const macro = fileBasedTest(__filename, (t, { input, options = {} }) => {
-  console.log(options);
   const { code } = transformSync(input, {
     presets: [[preset, options]]
   });

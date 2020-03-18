@@ -42,8 +42,26 @@ module.exports = function wrapInExport({ types }, { formatterModule } = {}) {
             });
             path.node.body = [ast];
           }
+          hoistImportsTo(path);
         }
       }
     }
   };
 };
+
+function hoistImportsTo(path) {
+  const imports = [];
+  path.traverse({
+    ImportDeclaration(path) {
+      console.log('Imports found');
+      imports.push(path);
+    }
+  });
+
+  imports.forEach(importPath => {
+    // First move the node to its new place
+    path.unshiftContainer('body', importPath.node);
+    // Then remove the path so it doesn't appear twice
+    importPath.remove();
+  });
+}
