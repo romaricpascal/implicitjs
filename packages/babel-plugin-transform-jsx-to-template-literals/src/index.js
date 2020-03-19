@@ -1,4 +1,5 @@
 const jsx = require('@babel/plugin-syntax-jsx').default;
+const TemplateLiteralBuilder = require('./TemplateLiteralBuilder');
 
 module.exports = function({ types }) {
   return {
@@ -6,21 +7,20 @@ module.exports = function({ types }) {
     inherits: jsx,
     visitor: {
       JSXElement(path) {
-        const quasis = [];
-        const expressions = [];
+        const builder = new TemplateLiteralBuilder(types);
 
         // First process the name
-        let tag = `<${path.node.openingElement.name.name}`;
+        builder.quasi('<');
+        builder.quasi(path.node.openingElement.name.name);
 
         // Then the attributes
         path.node.openingElement.attributes.forEach(attribute => {
           if (attribute.value.type === 'JSXExpressionContainer') {
-            tag += `${attribute.name.name}="`;
-            quasis.push(types.TemplateElement({ raw: tag }));
-            expressions.push(attribute.value.expression);
-            tag = '"';
+            builder.quasi(`${attribute.name.name}="`);
+            builder.expression(attribute.value.expression);
+            builder.quasi('"');
           } else {
-            tag += `${attribute.name.name}="${attribute.value.value}"`;
+            builder.quasi(`${attribute.name.name}="${attribute.value.value}"`);
           }
         });
 
@@ -31,26 +31,25 @@ module.exports = function({ types }) {
         // of XML, we'll close it by default and leave it to a minifier to remove
         // the unnecessary ones
         if (!path.node.closingElement) {
-          tag += '/>';
+          builder.quasi('/>');
         } else {
-          tag += '>';
+          builder.quasi('>');
         }
 
         if (path.node.children.length) {
           path.node.children.forEach(child => {
-            tag += child.value;
+            if (child.type === 'JSXText') {
+              builder.quasi(child.value);
+            }
           });
         }
 
         // Last adding the closing tag
         if (path.node.closingElement) {
-          tag += `</${path.node.closingElement.name.name}>`;
+          builder.quasi(`</${path.node.closingElement.name.name}>`);
         }
 
-        quasis.push(types.TemplateElement({ raw: tag }));
-
-        const templateLiteral = types.TemplateLiteral(quasis, expressions);
-        path.replaceWith(templateLiteral);
+        path.replaceWith(builder.node());
       }
     }
   };
