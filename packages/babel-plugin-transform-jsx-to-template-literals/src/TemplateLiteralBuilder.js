@@ -26,4 +26,13 @@ module.exports = class TemplateLiteralBuilder {
     }
     return this.types.TemplateLiteral(this.quasis, this.expressions);
   }
+
+  concat(templateLiteral) {
+    const { quasis, expressions } = templateLiteral;
+    this.currentQuasi += quasis[0].value.raw;
+    expressions.forEach((expression, index) => {
+      this.expression(expression);
+      this.quasi(quasis[index + 1].value.raw);
+    });
+  }
 };
