@@ -14,7 +14,14 @@ module.exports = function({ types }) {
 
         // Then the attributes
         path.node.openingElement.attributes.forEach(attribute => {
-          tag += ` ${attribute.name.name}="${attribute.value.value}"`;
+          if (attribute.value.type === 'JSXExpressionContainer') {
+            tag += `${attribute.name.name}="`;
+            quasis.push(types.TemplateElement({ raw: tag }));
+            expressions.push(attribute.value.expression);
+            tag = '"';
+          } else {
+            tag += `${attribute.name.name}="${attribute.value.value}"`;
+          }
         });
 
         // Then close the tag
