@@ -101,10 +101,8 @@ function withOutputComparison(fn) {
         compared = true;
         return t.is(
           // Ignore whitespace
-          output.replace(/\s/g, ''),
-          expected
-            .replace(/\/\/\s*prettier-ignore/g, '') // Ignore prettier comments
-            .replace(/\s/g, '') // Ignore whitespace
+          normalizeWhitespace(output),
+          normalizeWhitespace(expected)
         );
       }
     };
@@ -125,4 +123,13 @@ function dropAllExtensions(filename) {
   const indexOfFirstDot = filename.indexOf('.');
   if (indexOfFirstDot === -1) return filename;
   return filename.substring(0, indexOfFirstDot);
+}
+
+function normalizeWhitespace(string) {
+  return string
+    .replace(/\/\/\s*prettier-ignore/g, '')
+    .replace(/^[\t\s]+/gm, '') // Ignore prettier comments
+    .replace(/\r?\n|\r/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
