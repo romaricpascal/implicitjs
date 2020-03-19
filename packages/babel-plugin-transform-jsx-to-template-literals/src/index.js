@@ -44,7 +44,12 @@ module.exports = function({ types }) {
 
           if (path.node.children.length) {
             path.node.children.forEach(child => {
-              if (child.type === 'TemplateLiteral') {
+              if (
+                child.type === 'JSXExpressionContainer' &&
+                child.expression.type !== 'JSXEmptyExpression'
+              ) {
+                builder.expression(child.expression);
+              } else if (child.type === 'TemplateLiteral') {
                 builder.concat(child);
               } else if (child.type === 'JSXText') {
                 builder.quasi(child.value);
