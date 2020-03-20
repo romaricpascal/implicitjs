@@ -129,15 +129,24 @@ function toFunctionCall(jsxElement, { types }) {
     nullValueNode: () => types.BooleanLiteral(true)
   });
 
-  // Look if there are any children
+  // Look if there are any children and turn them
+  // into an extra object with a `children` property
   if (jsxElement.children.length) {
+    // A little container to put all the children elements
     const childrenExpressions = [];
     jsxElement.children.forEach(child => {
+      // Children can take various forms, but the ArrayExpression
+      // expects only Expression nodes so we need to convert them
+      // first, with the option to skip the child by returning
+      // undefined (for example for whitespace only text)
       const expression = toExpression(child, { types });
       if (expression) {
         childrenExpressions.push(expression);
       }
     });
+
+    // If there was any child element
+    // we can add the extra ObjectExpression
     if (childrenExpressions.length) {
       attributeObjects.push(
         types.ObjectExpression([
@@ -150,6 +159,9 @@ function toFunctionCall(jsxElement, { types }) {
     }
   }
 
+  // Finally we need to create the array of arguments for the function
+  // either merging the different objects in a unique object
+  // or passing any unique object directly (or passing nothing if there were no children)
   let callArguments;
   if (attributeObjects.length > 1) {
     callArguments = [mergeWithObjectSpread(attributeObjects)];
