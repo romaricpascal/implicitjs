@@ -164,7 +164,7 @@ function toFunctionCall(jsxElement, { types }) {
   // or passing any unique object directly (or passing nothing if there were no children)
   let callArguments;
   if (attributeObjects.length > 1) {
-    callArguments = [mergeWithObjectSpread(attributeObjects)];
+    callArguments = [mergeWithObjectSpread(attributeObjects, { types })];
   } else if (attributeObjects.length) {
     callArguments = [attributeObjects[0]];
   } else {
