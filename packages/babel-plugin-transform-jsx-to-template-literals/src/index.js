@@ -122,11 +122,33 @@ function toTemplateLiteral(jsxElement, { types }) {
  * @param {Object} options.types
  */
 function toFunctionCall(jsxElement, { types }) {
+  // Turn the attributes into function arguments
   const attributeSets = collectAttributeSets(jsxElement.openingElement);
   const attributeObjects = toObjects(attributeSets, {
     types,
     nullValueNode: () => types.BooleanLiteral(true)
   });
+
+  // Look if there are any children
+  if (jsxElement.children.length) {
+    const childrenExpressions = [];
+    jsxElement.children.forEach(child => {
+      const expression = toExpression(child, { types });
+      if (expression) {
+        childrenExpressions.push(expression);
+      }
+    });
+    if (childrenExpressions.length) {
+      attributeObjects.push(
+        types.ObjectExpression([
+          types.ObjectProperty(
+            types.Identifier('children'),
+            types.ArrayExpression(childrenExpressions)
+          )
+        ])
+      );
+    }
+  }
 
   let callArguments;
   if (attributeObjects.length > 1) {
@@ -224,4 +246,19 @@ function toObjects(
     });
     return expression;
   });
+}
+
+function toExpression(child, { types }) {
+  // Ignore empty text nodes
+  if (child.type === 'JSXText') {
+    // Ignore whitespace only nodes
+    if (/^\s+$/.test(child.value)) return;
+    return types.StringLiteral(child.value.trim());
+  } else if (child.type === 'JSXExpressionContainer') {
+    if (child.expression.type === 'JSXEmptyExpression') {
+      return types.UndefinedLiteral;
+    }
+    return child.expression;
+  }
+  return child;
 }
