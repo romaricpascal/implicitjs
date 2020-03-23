@@ -4,6 +4,11 @@ module.exports = {
     "plugin:node/recommended",
     "plugin:prettier/recommended"
   ],
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true
+    }
+  },
   "overrides": [
     {
       "files": [
