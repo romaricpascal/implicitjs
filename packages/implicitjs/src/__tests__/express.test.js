@@ -22,7 +22,6 @@ test('it actually works in Express', t => {
   const app = createApp();
   const agent = request.agent(app);
   return agent.get('/').then(({ text }) => {
-    console.log(text);
     t.is('Value: 10', text);
   });
 });
