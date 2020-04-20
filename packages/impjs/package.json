@@ -1,5 +1,5 @@
 {
-  "name": "implicitjs",
+  "name": "@impjs/impjs",
   "version": "0.0.1-alpha.0",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",

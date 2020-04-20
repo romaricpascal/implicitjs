@@ -1,5 +1,5 @@
 {
-  "name": "omniformat",
+  "name": "@impjs/omniformat",
   "version": "0.0.1-alpha.0",
   "description": "Formats strings from any kind of objects",
   "main": "src/index.js",
