@@ -1,6 +1,6 @@
 {
   "name": "@impjs/process-template-literals",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.1-alpha.1",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
   "engines": {

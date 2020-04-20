@@ -1,6 +1,6 @@
 {
   "name": "@impjs/babel-preset-implicitjs",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.1-alpha.1",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
   "engines": {
@@ -49,12 +49,12 @@
   },
   "dependencies": {
     "@babel/template": "^7.8.6",
-    "@impjs/babel-plugin-transform-jsx-to-template-literals": "^0.0.1-alpha.0",
-    "@impjs/babel-plugin-transform-last-statement": "^0.0.1-alpha.0",
-    "@impjs/babel-plugin-transform-tag-template-literals": "^0.0.1-alpha.0",
-    "@impjs/babel-plugin-transform-undeclared-variables": "^0.0.1-alpha.0",
-    "@impjs/omniformat": "^0.0.1-alpha.0",
-    "@impjs/process-template-literals": "^0.0.1-alpha.0"
+    "@impjs/babel-plugin-transform-jsx-to-template-literals": "^0.0.1-alpha.1",
+    "@impjs/babel-plugin-transform-last-statement": "^0.0.1-alpha.1",
+    "@impjs/babel-plugin-transform-tag-template-literals": "^0.0.1-alpha.1",
+    "@impjs/babel-plugin-transform-undeclared-variables": "^0.0.1-alpha.1",
+    "@impjs/omniformat": "^0.0.1-alpha.1",
+    "@impjs/process-template-literals": "^0.0.1-alpha.1"
   },
   "peerDependencies": {
     "@babel/core": "^7.8.7"
