@@ -48,9 +48,9 @@
   },
   "dependencies": {
     "@babel/core": "^7.8.7",
-    "@impjs/babel-preset-impjs": "^0.0.1-alpha.0",
-    "@impjs/omniformat": "^0.0.1-alpha.0",
-    "@impjs/process-template-literals": "^0.0.1-alpha.0"
+    "@impjs/babel-preset-impjs": "^0.0.1-alpha.1",
+    "@impjs/omniformat": "^0.0.1-alpha.1",
+    "@impjs/process-template-literals": "^0.0.1-alpha.1"
   },
   "ava": {
     "files": [

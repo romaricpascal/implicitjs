@@ -1,6 +1,6 @@
 const { transformSync } = require('@babel/core');
-const createTemplateTag = require('process-template-literals');
-const omniformat = require('omniformat');
+const createTemplateTag = require('@impjs/process-template-literals');
+const omniformat = require('@impjs/omniformat');
 const { readFileSync } = require('fs');
 const { createRequire, createRequireFromPath } = require('module');
 const nodeGlobals = require('./nodeGlobals');
@@ -52,7 +52,7 @@ const compile = withCache(function(
   // First we'll compile the body of the function
   // with Babel
   const { code } = transformSync(templateString, {
-    presets: [['implicitjs', { tagName, type: 'body' }]]
+    presets: [['@impjs/impjs', { tagName, type: 'body' }]]
   });
   // At that stage, we don't have a function yet
   // just its body, so we need to create our own

@@ -8,7 +8,7 @@ Coupled with omniformat, it opens the door to:
 
 ```js
 const createProcessorTag = require('process-template-literals');
-const omniformat = require('omniformat');
+const omniformat = require('@impjs/omniformat');
 // Wrap omniformat to provide our custom configuration
 function formatter(expression) {
   return omniformat(expression, {iteratorJoinString: ' '});

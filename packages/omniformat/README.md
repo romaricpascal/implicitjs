@@ -15,7 +15,7 @@ npm install omniformat
 Then import or require it in your project and profit
 
 ```js
-const format = require('omniformat');
+const format = require('@impjs/omniformat');
 
 format('Look, a plane!') // Strings are passed as is 'Look, a plane!'
 format({content: 'Look, a plane!'}) // Objects are JSON.stringified '{"content": "Look, a plane!"}

@@ -40,7 +40,7 @@ test('it provides the data from the tagged call', t => {
   lazyTag``(3);
 });
 test('integration with omniformat', t => {
-  const omniformat = require('omniformat');
+  const omniformat = require('@impjs/omniformat');
   function formatter(expression) {
     return omniformat(expression, { iteratorJoinString: ' ' });
   }
