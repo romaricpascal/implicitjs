@@ -1,6 +1,6 @@
 {
   "name": "@impjs/impjs",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
   "engines": {
@@ -48,9 +48,9 @@
   },
   "dependencies": {
     "@babel/core": "^7.8.7",
-    "@impjs/babel-preset-impjs": "^0.0.1-alpha.1",
-    "@impjs/omniformat": "^0.0.1-alpha.1",
-    "@impjs/process-template-literals": "^0.0.1-alpha.1"
+    "@impjs/babel-preset-impjs": "^0.0.1-alpha.2",
+    "@impjs/omniformat": "^0.0.1-alpha.2",
+    "@impjs/process-template-literals": "^0.0.1-alpha.2"
   },
   "ava": {
     "files": [
