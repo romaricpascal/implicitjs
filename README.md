@@ -72,12 +72,12 @@ const renderDirectlyFromFile = renderFile(PATH_TO_TEMPLATE, data);
 
 ### With Bundlers
 
-Behind the scene, ImplicitJS is a set of Babel transforms. You can use the [`babel-preset-implicitjs`][babel-preset-implicit] in your Babel configuration to compile files into ES6 modules.
+Behind the scene, ImplicitJS is a set of Babel transforms. You can use the [`babel-preset-impjs`][babel-preset-implicit] in your Babel configuration to compile files into ES6 modules.
 
 The preset only takes care of the implicit syntax transformations. Most likely, you'll also want to use `@babel/preset-env`, or maybe bring in specific plugins like `babel-plugin-proposal-pipeline-operator` (handy for filter-like syntaxes that other template languages have). It's up to you to add them in your Babel configuration.
 
 [implicitjs]: 'packages/implicitjs',
-[babel-preset-implicitjs]: 'packages/babel-preset-implicitjs'
+[babel-preset-impjs]: 'packages/babel-preset-impjs'
 
 TODO
 ---

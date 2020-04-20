@@ -1,9 +1,11 @@
 const wrapInExport = require('./lib/wrapInExport');
-const tagTemplateLiterals = require('babel-plugin-transform-tag-template-literals');
-const transformLastStatement = require('babel-plugin-transform-last-statement');
-const transformUndeclaredVariables = require('babel-plugin-transform-undeclared-variables');
-const jsxToTemplateLiterals = require('babel-plugin-transform-jsx-to-template-literals');
-const { addImport } = require('babel-plugin-transform-undeclared-variables');
+const tagTemplateLiterals = require('@impjs/babel-plugin-transform-tag-template-literals');
+const transformLastStatement = require('@impjs/babel-plugin-transform-last-statement');
+const transformUndeclaredVariables = require('@impjs/babel-plugin-transform-undeclared-variables');
+const jsxToTemplateLiterals = require('@impjs/babel-plugin-transform-jsx-to-template-literals');
+const {
+  addImport
+} = require('@impjs/babel-plugin-transform-undeclared-variables');
 
 module.exports = function(
   babel,

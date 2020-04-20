@@ -1,5 +1,5 @@
 {
-  "name": "@impjs/babel-preset-implicitjs",
+  "name": "@impjs/babel-preset-impjs",
   "version": "0.0.1-alpha.1",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/babel-preset-implicitjs.git"
+    "url": "git+https://github.com/babel-preset-impjs.git"
   },
   "author": "Romaric Pascal <hello@romaricpascal.is>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/babel-preset-implicitjs/issues"
+    "url": "https://github.com/babel-preset-impjs/issues"
   },
-  "homepage": "https://github.com/babel-preset-implicitjs#readme",
+  "homepage": "https://github.com/babel-preset-impjs#readme",
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@commitlint/cli": "^8.3.5",
