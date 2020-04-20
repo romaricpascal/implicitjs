@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-implicitjs",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.0",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
   "engines": {
@@ -49,12 +49,12 @@
   },
   "dependencies": {
     "@babel/template": "^7.8.6",
-    "babel-plugin-transform-jsx-to-template-literals": "^0.1.1",
-    "babel-plugin-transform-last-statement": "^0.1.1",
-    "babel-plugin-transform-tag-template-literals": "^0.1.1",
-    "babel-plugin-transform-undeclared-variables": "^0.1.1",
-    "omniformat": "^1.0.0",
-    "process-template-literals": "^0.1.0"
+    "babel-plugin-transform-jsx-to-template-literals": "^0.0.1-alpha.0",
+    "babel-plugin-transform-last-statement": "^0.0.1-alpha.0",
+    "babel-plugin-transform-tag-template-literals": "^0.0.1-alpha.0",
+    "babel-plugin-transform-undeclared-variables": "^0.0.1-alpha.0",
+    "omniformat": "^0.0.1-alpha.0",
+    "process-template-literals": "^0.0.1-alpha.0"
   },
   "peerDependencies": {
     "@babel/core": "^7.8.7"

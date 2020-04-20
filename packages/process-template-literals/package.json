@@ -1,6 +1,6 @@
 {
   "name": "process-template-literals",
-  "version": "0.1.0",
+  "version": "0.0.1-alpha.0",
   "description": "Template for NodeJS projects",
   "main": "src/index.js",
   "engines": {
@@ -34,11 +34,10 @@
     "lint-staged": "^9.2.3",
     "np": "^6.2.0",
     "nyc": "^14.1.1",
-    "omniformat": "^1.0.0-0",
+    "omniformat": "^0.0.1-alpha.0",
     "prettier": "^1.18.2",
     "supertest": "^4.0.2"
   },
-  "dependencies": {},
   "ava": {
     "files": [
       "**/*.test.js"
